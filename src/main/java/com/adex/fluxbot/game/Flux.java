@@ -7,11 +7,11 @@ import java.util.ArrayList;
 
 public class Flux {
 
-    private final Ruleset ruleset;
+    public final Ruleset ruleset;
 
     private final ArrayList<Long> players;
 
-    private final Pile<Card> cards;
+    public final Pile<Card> cards;
 
 
     public Flux(long userId) {

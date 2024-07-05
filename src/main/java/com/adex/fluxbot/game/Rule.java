@@ -5,14 +5,14 @@ package com.adex.fluxbot.game;
  */
 public enum Rule {
 
-    PLAY_COUNT("Play", 0, -1, 5, 1, 0),
-    DRAW_COUNT("Draw", 1, 1, 5, 1, 0),
-    HAND_LIMIT("Hand Limit", 2, -1, 5, -1, 1),
-    KEEPER_LIMIT("Keeper Limit", 3, 0, 5, 0, 1),
-    KEEPERS_SECRET("Keepers hidden", 4, -1, 1, 0, 1),
-    FINAL_CARD_RANDOM("Final card random", 5, 0, 0, 0, 2);
+    PLAY_COUNT("Play", 0, -1, 5, 1, DisplayStyle.ALWAYS),
+    DRAW_COUNT("Draw", 1, 1, 5, 1, DisplayStyle.ALWAYS),
+    HAND_LIMIT("Hand Limit", 2, -1, 5, -1, DisplayStyle.WHEN_NOT_DEFAULT),
+    KEEPER_LIMIT("Keeper Limit", 3, 0, 5, 0, DisplayStyle.WHEN_NOT_DEFAULT),
+    KEEPERS_SECRET("Keepers hidden", 4, -1, 1, 0, DisplayStyle.WHEN_NOT_DEFAULT),
+    FINAL_CARD_RANDOM("Final card random", 5, 0, 0, 0, DisplayStyle.ONLY_NAME_AND_WHEN_NOT_DEFAULT);
 
-    Rule(String name, int id, int min, int max, int defaultValue, int displayStyle) {
+    Rule(String name, int id, int min, int max, int defaultValue, DisplayStyle displayStyle) {
         this.id = id;
         this.displayStyle = displayStyle;
         if (min > max)
@@ -38,11 +38,7 @@ public enum Rule {
     public final int max;
     public final int defaultValue;
 
-    // 0 = name + value
-    // 1 = name + value if not default
-    // 2 = name if not default
-    // 3 = custom
-    private final int displayStyle;
+    private final DisplayStyle displayStyle;
 
     /**
      * Formats the rule and its value to display format
@@ -53,18 +49,18 @@ public enum Rule {
     public String display(int value) {
         String valueString = value == -1 ? "All" : "" + value;
 
-        if (displayStyle == 0) {
+        if (displayStyle == DisplayStyle.ALWAYS) {
             return name + ": " + valueString;
         }
 
-        if (displayStyle == 1) {
+        if (displayStyle == DisplayStyle.WHEN_NOT_DEFAULT) {
             if (value == defaultValue) {
                 return "";
             }
             return name + ": " + valueString;
         }
 
-        if (displayStyle == 2) {
+        if (displayStyle == DisplayStyle.ONLY_NAME_AND_WHEN_NOT_DEFAULT) {
             if (value == defaultValue) {
                 return "";
             }
@@ -73,6 +69,10 @@ public enum Rule {
 
 
         throw new IllegalStateException("Rule " + this.name + " has custom display but no display is defined for it");
+    }
+
+    enum DisplayStyle {
+        ALWAYS, WHEN_NOT_DEFAULT, ONLY_NAME_AND_WHEN_NOT_DEFAULT, CUSTOM;
     }
 
 }
