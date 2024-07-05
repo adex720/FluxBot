@@ -19,7 +19,7 @@ public class Pile<T> {
     private final ArrayDeque<T> drawPile;
     private final ArrayDeque<T> discardPile;
 
-    Pile(List<T> elements) {
+    public Pile(List<T> elements) {
         Collections.shuffle(elements);
         drawPile = new ArrayDeque<>(elements);
         discardPile = new ArrayDeque<>(elements.size());

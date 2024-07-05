@@ -1,9 +1,9 @@
 package com.adex.fluxbot.game;
 
 import com.adex.fluxbot.game.card.Card;
+import com.adex.fluxbot.game.card.Pile;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class Flux {
 
@@ -11,8 +11,7 @@ public class Flux {
 
     private final ArrayList<Long> players;
 
-    private final ArrayList<Card> drawPile;
-    private final ArrayList<Card> discardPile;
+    private final Pile<Card> cards;
 
 
     public Flux(long userId) {
@@ -21,8 +20,7 @@ public class Flux {
         players = new ArrayList<>();
         players.add(userId);
 
-        drawPile = new ArrayList<>();
-        discardPile = new ArrayList<>();
+        cards = new Pile<>(Card.getCards());
     }
 
     /**
@@ -31,8 +29,6 @@ public class Flux {
      * their order will be unchanged and the shuffled cards will be added to the ArrayList before them.
      */
     public void shuffleDiscardPile() {
-        Collections.shuffle(discardPile);
-        drawPile.addAll(drawPile.size(), discardPile);
-        discardPile.clear();
+        cards.shuffle();
     }
 }
