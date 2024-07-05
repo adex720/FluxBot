@@ -4,6 +4,8 @@ import com.adex.fluxbot.game.keeper.Keepers;
 
 public class Goals {
 
+    public static final Goal NO_GOAL = new NoGoal();
+
     public static final Goal MILK_AND_COOKIES = new Have2KeepersGoal("Milk and cookies", Keepers.MILK, Keepers.COOKIES);
     public static final Goal CHOCOLATE_AND_MILK = new Have2KeepersGoal("Chocolate Milk", Keepers.CHOCOLATE, Keepers.MILK);
     public static final Goal CHOCOLATE_AND_COOKIES = new Have2KeepersGoal("Chocolate Cookies", Keepers.CHOCOLATE, Keepers.COOKIES);
