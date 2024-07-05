@@ -1,4 +1,4 @@
-package com.adex.fluxbot.game.keeper;
+package com.adex.fluxbot.game.goal;
 
 import com.adex.fluxbot.game.Player;
 

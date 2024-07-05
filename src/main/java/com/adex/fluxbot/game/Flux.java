@@ -2,6 +2,7 @@ package com.adex.fluxbot.game;
 
 import com.adex.fluxbot.game.card.Card;
 import com.adex.fluxbot.game.card.Pile;
+import com.adex.fluxbot.game.rule.Ruleset;
 
 import java.util.ArrayList;
 
@@ -22,6 +23,10 @@ public class Flux {
 
         players = new ArrayList<>();
         players.add(new Player(userId, this));
+    }
+
+    public ArrayList<Player> getPlayers() {
+        return players;
     }
 
     /**

@@ -1,4 +1,4 @@
-package com.adex.fluxbot.game;
+package com.adex.fluxbot.game.rule;
 
 /**
  * Defines rules states for the game.

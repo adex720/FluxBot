@@ -22,5 +22,6 @@ public class Keepers {
     public static final Keeper THE_PYRAMID = new Keeper("The Pyramid", "");
     public static final Keeper THE_ROCKET = new Keeper("The Rocket", "");
     public static final Keeper THE_EYE = new Keeper("The Eye", "");
+    public static final Keeper COOKIES = new Keeper("Cookies", "");
 
 }

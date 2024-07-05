@@ -2,6 +2,7 @@ package com.adex.fluxbot.game;
 
 import com.adex.fluxbot.game.card.Card;
 import com.adex.fluxbot.game.keeper.Keeper;
+import com.adex.fluxbot.game.rule.Rule;
 
 import java.util.ArrayList;
 
@@ -17,6 +18,8 @@ public class Player {
 
     private int hiddenKeeperIndex;
 
+    private final Flux game;
+
     /**
      * Creates a new player for the game.
      * Requires that the rules and card pile are already defined.
@@ -25,6 +28,8 @@ public class Player {
      * @param game   Game
      */
     public Player(long userId, Flux game) {
+        this.game = game;
+
         this.userId = userId;
         hiddenKeeperIndex = -1;
 
@@ -51,5 +56,9 @@ public class Player {
 
     public int getHiddenKeeperIndex() {
         return hiddenKeeperIndex;
+    }
+
+    public Flux getGame() {
+        return game;
     }
 }

@@ -1,4 +1,4 @@
-package com.adex.fluxbot.game;
+package com.adex.fluxbot.game.rule;
 
 /**
  * Contains the values of each rule in a game

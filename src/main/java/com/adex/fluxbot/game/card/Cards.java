@@ -1,6 +1,6 @@
 package com.adex.fluxbot.game.card;
 
-import com.adex.fluxbot.game.Rule;
+import com.adex.fluxbot.game.rule.Rule;
 
 public class Cards {
 
