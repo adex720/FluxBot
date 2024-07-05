@@ -7,20 +7,21 @@ import java.util.ArrayList;
 
 public class Flux {
 
+    public static final int CARDS_IN_STARTING_HAND = 3;
+
     public final Ruleset ruleset;
 
-    private final ArrayList<Long> players;
+    private final ArrayList<Player> players;
 
     public final Pile<Card> cards;
 
 
     public Flux(long userId) {
         this.ruleset = new Ruleset();
+        cards = new Pile<>(Card.getCards());
 
         players = new ArrayList<>();
-        players.add(userId);
-
-        cards = new Pile<>(Card.getCards());
+        players.add(new Player(userId, this));
     }
 
     /**

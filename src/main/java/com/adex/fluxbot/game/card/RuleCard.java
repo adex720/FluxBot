@@ -3,6 +3,9 @@ package com.adex.fluxbot.game.card;
 import com.adex.fluxbot.game.Flux;
 import com.adex.fluxbot.game.Rule;
 
+/**
+ * A card which sets a rule to a specific value.
+ */
 public class RuleCard extends Card {
 
     public RuleCard(String name, Rule rule, int value) {
