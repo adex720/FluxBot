@@ -1,6 +1,7 @@
 package com.adex.fluxbot.game.card;
 
 import com.adex.fluxbot.game.goal.Goals;
+import com.adex.fluxbot.game.keeper.Keepers;
 import com.adex.fluxbot.game.rule.Rule;
 
 public class Cards {
@@ -32,6 +33,29 @@ public class Cards {
     public static final Card RULE_ALL_KEEPERS_HIDDEN = new RuleCard(Rule.KEEPERS_SECRET, -1);
 
     public static final Card RULE_FINAL_CARD_RANDOM = new RuleCard(Rule.FINAL_CARD_RANDOM, 1);
+
+
+    public static final Card THE_BRAIN = new KeeperCard(Keepers.THE_BRAIN);
+    public static final Card THE_TOASTER = new KeeperCard(Keepers.THE_TOASTER);
+    public static final Card TELEVISION = new KeeperCard(Keepers.TELEVISION);
+    public static final Card MONEY = new KeeperCard(Keepers.MONEY);
+    public static final Card PEACE = new KeeperCard(Keepers.PEACE);
+    public static final Card BREAD = new KeeperCard(Keepers.BREAD);
+    public static final Card CHOCOLATE = new KeeperCard(Keepers.CHOCOLATE);
+    public static final Card TIME = new KeeperCard(Keepers.TIME);
+    public static final Card DEATH = new KeeperCard(Keepers.DEATH);
+    public static final Card THE_MOON = new KeeperCard(Keepers.THE_MOON);
+    public static final Card WAR = new KeeperCard(Keepers.WAR);
+    public static final Card DOUGHNUTS = new KeeperCard(Keepers.DOUGHNUTS);
+    public static final Card COFFEE = new KeeperCard(Keepers.COFFEE);
+    public static final Card LOVE = new KeeperCard(Keepers.LOVE);
+    public static final Card MILK = new KeeperCard(Keepers.MILK);
+    public static final Card TAXES = new KeeperCard(Keepers.TAXES);
+    public static final Card THE_SUN = new KeeperCard(Keepers.THE_SUN);
+    public static final Card THE_PYRAMID = new KeeperCard(Keepers.THE_PYRAMID);
+    public static final Card THE_ROCKET = new KeeperCard(Keepers.THE_ROCKET);
+    public static final Card THE_EYE = new KeeperCard(Keepers.THE_EYE);
+    public static final Card COOKIES = new KeeperCard(Keepers.COOKIES);
 
 
     public static final Card GOAL_MILK_AND_COOKIES = new GoalCard(Goals.MILK_AND_COOKIES);

@@ -38,6 +38,13 @@ public class Flux {
         nextPlayerId = 1;
     }
 
+    /**
+     * Returns the player whose turn it is.
+     */
+    public Player currentPlayer() {
+        return players.get(currentPlayerId);
+    }
+
     public ArrayList<Player> getPlayers() {
         return players;
     }
