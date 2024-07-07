@@ -74,10 +74,11 @@ public class Player {
             hand.add(card);
             cardsDrawn++;
         }
+        if (cardsDrawn > 0) game.cardsDrawn();
         return cardsDrawn;
     }
 
-    public void removeCardFromHand(Card card){
+    public void removeCardFromHand(Card card) {
         hand.remove(card);
     }
 

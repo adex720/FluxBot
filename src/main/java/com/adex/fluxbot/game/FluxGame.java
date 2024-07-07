@@ -266,6 +266,24 @@ public class FluxGame {
     }
 
     /**
+     * Checks if someone wins.
+     * Should be called always when the keepers of any player change.
+     */
+    public void keepersChanged() {
+        int winnerId = checkForWin();
+        if (winnerId >= 0) handleWin(winnerId);
+    }
+
+    /**
+     * Checks if someone wins.
+     * Should be called always when the amount of cards in a player's hand increase.
+     */
+    public void cardsDrawn() {
+        int winnerId = checkForWin();
+        if (winnerId >= 0) handleWin(winnerId);
+    }
+
+    /**
      * Draws more cards for the current player if needed.
      * Should be called when the draw count rule is changed.
      */

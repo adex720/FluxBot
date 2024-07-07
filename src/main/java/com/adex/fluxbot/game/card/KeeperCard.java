@@ -16,5 +16,6 @@ public class KeeperCard extends Card {
     @Override
     public void onPlay(FluxGame game, EventContext context) {
         game.currentPlayer().getKeepers().add(keeper);
+        game.keepersChanged();
     }
 }
