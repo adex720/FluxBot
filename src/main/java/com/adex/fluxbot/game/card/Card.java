@@ -30,6 +30,7 @@ public abstract class Card {
         return CARD_AMOUNT;
     }
 
+
     public abstract void onPlay(FluxGame game, EventContext context);
 
     public enum Type {

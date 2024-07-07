@@ -61,5 +61,6 @@ public class CommandPlay extends Command {
         }
 
         card.onPlay(game, context);
+        game.cardPlayed();
     }
 }

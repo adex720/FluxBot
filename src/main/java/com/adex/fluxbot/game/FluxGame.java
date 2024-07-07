@@ -1,6 +1,8 @@
 package com.adex.fluxbot.game;
 
 import com.adex.fluxbot.Util;
+import com.adex.fluxbot.discord.MessageCreator;
+import com.adex.fluxbot.discord.command.EventContext;
 import com.adex.fluxbot.game.card.Card;
 import com.adex.fluxbot.game.card.Pile;
 import com.adex.fluxbot.game.goal.Goal;
@@ -17,7 +19,7 @@ public class FluxGame {
 
     public static final int CARDS_IN_STARTING_HAND = 3;
 
-    public final Ruleset ruleset;
+    private final Ruleset ruleset;
 
     private final ArrayList<Player> players;
     private int playerCount;
@@ -66,6 +68,81 @@ public class FluxGame {
         cardsDrawn = 0;
         cardsPlayed = 0;
         cardPlaying = null;
+    }
+
+    /**
+     * Returns the current value of the rule.
+     *
+     * @param rule Rule
+     */
+    public int get(Rule rule) {
+        return ruleset.get(rule);
+    }
+
+    /**
+     * Returns the current value of the rule.
+     *
+     * @param ruleId Id of the rule
+     */
+    public int get(int ruleId) {
+        return ruleset.get(ruleId);
+    }
+
+    /**
+     * Sets the value of the rule into the given value.
+     * Checks if the value is in the allowed range.
+     *
+     * @param rule  Rule
+     * @param value New value
+     */
+    public void set(Rule rule, int value) {
+        ruleset.set(rule, value);
+        if (rule == Rule.HAND_LIMIT) handLimitChanged();
+        if (rule == Rule.KEEPER_LIMIT) keeperLimitChanged();
+    }
+
+    /**
+     * Sets the value of the rule into the given value.
+     * Checks if the value is in the allowed range.
+     *
+     * @param ruleId Id of the rule
+     * @param value  New value
+     */
+    public void set(int ruleId, int value) {
+        ruleset.set(ruleId, value);
+        if (ruleId == Rule.HAND_LIMIT.id) handLimitChanged();
+        if (ruleId == Rule.KEEPER_LIMIT.id) keeperLimitChanged();
+    }
+
+    /**
+     * Sets the value of the rule into its default value.
+     *
+     * @param rule Rule
+     */
+    public void reset(Rule rule) {
+        ruleset.reset(rule);
+        if (rule == Rule.HAND_LIMIT) handLimitChanged();
+        if (rule == Rule.KEEPER_LIMIT) keeperLimitChanged();
+    }
+
+    /**
+     * Sets the value of the rule into its default value.
+     *
+     * @param ruleId Id of the rule
+     */
+    public void reset(int ruleId) {
+        ruleset.reset(ruleId);
+        if (ruleId == Rule.HAND_LIMIT.id) handLimitChanged();
+        if (ruleId == Rule.KEEPER_LIMIT.id) keeperLimitChanged();
+    }
+
+    /**
+     * Sets the value of each rule into its default value.
+     */
+    public void resetAll() {
+        ruleset.resetAll();
+        handLimitChanged();
+        keeperLimitChanged();
     }
 
     /**
@@ -157,6 +234,33 @@ public class FluxGame {
         channel.sendMessage("<@" + userId + "> has " + (kicked ? "been kicked from" : "left") + " the game.").queue();
     }
 
+    /**
+     * Increases cards played this turn count.
+     * Starts next turn if this was the last card to be played.
+     * Should only be called if the card should count towards the play rule limit. (Played with /play)
+     * Should always be called AFTER {@link Card#onPlay(FluxGame, EventContext)}
+     */
+    public void cardPlayed() {
+        cardsPlayed++;
+        if (cardsPlayed >= ruleset.get(Rule.PLAY_COUNT)) endTurn();
+    }
+
+    /**
+     * Checks hand limit from other players.
+     * Should always be called when hand limit is changed.
+     */
+    public void handLimitChanged() {
+        checkHandLimitFromOthers(currentPlayer());
+    }
+
+    /**
+     * Checks keeper limit from other players.
+     * Should always be called when keeper limit is changed.
+     */
+    public void keeperLimitChanged() {
+        checkKeeperLimitFromOthers(currentPlayer());
+    }
+
     public TurnState getTurnState() {
         return turnState;
     }
@@ -175,12 +279,13 @@ public class FluxGame {
     }
 
     /**
+     * Resets turn specific variables such as cards played count during the turn.
      * Draws cards for the player and sends message to Discord.
      */
     public void startTurn() {
         Player player = currentPlayer();
         int drawCount = ruleset.get(Rule.DRAW_COUNT);
-        int cardsDrawn = player.addCardsToHand(cards.draw(new Card[drawCount], drawCount));
+        cardsDrawn = player.addCardsToHand(cards.draw(new Card[drawCount], drawCount));
 
         if (player.getHandSize() == 0) {
             channel.sendMessageEmbeds(new EmbedBuilder()
@@ -189,14 +294,11 @@ public class FluxGame {
                     .addField("", player.getAsMention() + " has no cards in hand and there are none in the drawing pile.", true)
                     .build()).queue();
 
-            // No need to check hand limit
-            if (checkKeeperLimit(player)) return;
-
-            prepareNextTurn();
-            startTurn();
+            endTurn();
             return;
         }
 
+        cardsPlayed = 0;
         turnState = TurnState.WAITING_CARD_TO_PLAY;
 
         channel.sendMessageEmbeds(new EmbedBuilder()
@@ -204,6 +306,68 @@ public class FluxGame {
                 .setColor(0)
                 .addField("", player.getAsMention() + " drew " + Util.combineCountAndWord(cardsDrawn, "card"), true)
                 .build()).queue();
+    }
+
+    /**
+     * Checks for hand and keeper limit.
+     * If they aren't hit, starts next player's turn.
+     * Should be called after player has played cards.
+     */
+    public void endTurn() {
+        if (checkHandLimit(currentPlayer())) return;
+        if (checkKeeperLimit(currentPlayer())) return;
+
+        prepareNextTurn();
+        startTurn();
+    }
+
+    /**
+     * Checks if the player needs to discard cards due to hand limit.
+     * Should be called at the end of the player's turn.
+     * Sends a message and prepares for response if yes.
+     *
+     * @return true if cards need to be discarded, false if not.
+     */
+    public boolean checkHandLimit(Player player) {
+        int handLimit = ruleset.get(Rule.HAND_LIMIT);
+        if (handLimit < 0 || player.getHandSize() <= handLimit) return false; // No need to discard
+        int discardCount = player.getHandSize() - handLimit;
+
+        turnState = TurnState.WAITING_FOR_CARD_DISCARDING_CURRENT;
+        channel.sendMessageEmbeds(MessageCreator.createDefault("Too many cards in hand",
+                player.username + " needs to discard " + Util.combineCountAndWord(discardCount, "card"),
+                "Use /discard to discard cards from your hand")).queue();
+        return true;
+    }
+
+    /**
+     * Checks if a player needs to discard cards due to hand limit.
+     * Doesn't check the player whose turn it is.
+     * Should be called when a new hand limit is played.
+     *
+     * @param current Player whose hands not to check. Can be null.
+     * @return true if at least one player needs to discard hands, false if not.
+     */
+    public boolean checkHandLimitFromOthers(@Nullable Player current) {
+        int handLimit = ruleset.get(Rule.HAND_LIMIT);
+        if (handLimit == -1) return false;
+
+        StringBuilder tooMany = new StringBuilder();
+        for (Player player : players) {
+            if (player == current) continue;
+            if (player.getHandSize() > handLimit) {
+                turnState = TurnState.WAITING_FOR_CARD_DISCARDING_OTHERS;
+                if (!tooMany.isEmpty()) tooMany.append(", ");
+                tooMany.append(player.getAsMention());
+            }
+        }
+
+        if (tooMany.isEmpty()) return false;
+        channel.sendMessageEmbeds(MessageCreator.createDefault("Hand limit is " + ruleset.get(Rule.HAND_LIMIT),
+                "Use /discard to discard cards from your hand",
+                tooMany + " have too many cards")).queue();
+
+        return true;
     }
 
     /**
@@ -216,8 +380,13 @@ public class FluxGame {
     public boolean checkKeeperLimit(Player player) {
         int keeperLimit = ruleset.get(Rule.KEEPER_LIMIT);
         if (keeperLimit < 0 || player.getKeeperCount() <= keeperLimit) return false; // No need to discard
+        int discardCount = player.getKeeperCount() - keeperLimit;
 
         turnState = TurnState.WAITING_FOR_KEEPER_DISCARDING_CURRENT;
+
+        channel.sendMessageEmbeds(MessageCreator.createDefault("Too many keepers",
+                player.username + " needs to discard " + Util.combineCountAndWord(discardCount, "keeper"),
+                "Use /remove to remove keepers from in front of you")).queue();
         return true;
     }
 
@@ -233,15 +402,22 @@ public class FluxGame {
         int keeperLimit = ruleset.get(Rule.KEEPER_LIMIT);
         if (keeperLimit == -1) return false;
 
+        StringBuilder tooMany = new StringBuilder();
         for (Player player : players) {
             if (player == current) continue;
             if (player.getKeeperCount() > keeperLimit) {
                 turnState = TurnState.WAITING_FOR_KEEPER_DISCARDING_OTHERS;
-                return true;
+                if (!tooMany.isEmpty()) tooMany.append(", ");
+                tooMany.append(player.getAsMention());
             }
         }
 
-        return false;
+        if (tooMany.isEmpty()) return false;
+        channel.sendMessageEmbeds(MessageCreator.createDefault("Keeper limit is " + ruleset.get(Rule.HAND_LIMIT),
+                "Use /remove to remove keepers from in front of you",
+                tooMany + " have too many keepers")).queue();
+
+        return true;
     }
 
     /**
