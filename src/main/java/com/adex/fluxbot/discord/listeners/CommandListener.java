@@ -24,14 +24,14 @@ public class CommandListener extends ListenerAdapter {
     }
 
     /**
-     * Initializes commands and adds them to the commands set.
+     * Initializes commands and adds them to the commands setRule.
      */
     public void initCommands() {
         addCommand(new CommandPlay());
     }
 
     /**
-     * Adds a command to the commands set and gives it an id.
+     * Adds a command to the commands setRule and gives it an id.
      */
     private void addCommand(Command command) {
         command.setId(commands.size());

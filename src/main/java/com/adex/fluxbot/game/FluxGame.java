@@ -75,7 +75,7 @@ public class FluxGame {
      *
      * @param rule Rule
      */
-    public int get(Rule rule) {
+    public int getRule(Rule rule) {
         return ruleset.get(rule);
     }
 
@@ -84,7 +84,7 @@ public class FluxGame {
      *
      * @param ruleId Id of the rule
      */
-    public int get(int ruleId) {
+    public int getRule(int ruleId) {
         return ruleset.get(ruleId);
     }
 
@@ -96,7 +96,7 @@ public class FluxGame {
      * @param value New value
      * @return true if cards need to be discarded or a keeper to hide must be chosen.
      */
-    public boolean set(Rule rule, int value) {
+    public boolean setRule(Rule rule, int value) {
         ruleset.set(rule, value);
 
         boolean waitForUser = false;
@@ -119,7 +119,7 @@ public class FluxGame {
      * @param value  New value
      * @return true if cards need to be discarded or a keeper to hide must be chosen.
      */
-    public boolean set(int ruleId, int value) {
+    public boolean setRule(int ruleId, int value) {
         ruleset.set(ruleId, value);
 
         boolean waitForUser = false;
@@ -139,9 +139,10 @@ public class FluxGame {
      *
      * @param rule Rule
      */
-    public void reset(Rule rule) {
+    public void resetRule(Rule rule) {
         ruleset.reset(rule);
         if (rule == Rule.KEEPERS_SECRET) keepersSecretChanged();
+        else if (rule == Rule.DRAW_COUNT) drawCountChanged();
     }
 
     /**
@@ -149,17 +150,19 @@ public class FluxGame {
      *
      * @param ruleId Id of the rule
      */
-    public void reset(int ruleId) {
+    public void resetRule(int ruleId) {
         ruleset.reset(ruleId);
         if (ruleId == Rule.KEEPERS_SECRET.id) keepersSecretChanged();
+        else if (ruleId == Rule.DRAW_COUNT.id) drawCountChanged();
     }
 
     /**
      * Sets the value of each rule into its default value.
      */
-    public void resetAll() {
+    public void resetAllRules() {
         ruleset.resetAll();
         keepersSecretChanged();
+        drawCountChanged();
     }
 
     /**
@@ -263,6 +266,24 @@ public class FluxGame {
     }
 
     /**
+     * Draws more cards for the current player if needed.
+     * Should be called when the draw count rule is changed.
+     */
+    public void drawCountChanged() {
+        int drawCount = getRule(Rule.DRAW_COUNT);
+        if (cardsDrawn >= drawCount) return;
+
+        Player player = currentPlayer();
+
+        int cardsNeeded = drawCount - cardsDrawn;
+        int cardsDrawn = player.addCardsToHand(cards, cardsNeeded);
+
+        channel.sendMessageEmbeds(MessageCreator.createDefault("The draw rule was changed to " + drawCount,
+                player.username + " drew " + Util.combineCountAndWord(cardsDrawn, "more card"),
+                MessageCreator.COMMAND_TIPS)).queue();
+    }
+
+    /**
      * Checks hand limit from other players.
      * Should always be called when hand limit is changed.
      * Doesn't need to be called if the limit is removed.
@@ -316,7 +337,7 @@ public class FluxGame {
     public void startTurn() {
         Player player = currentPlayer();
         int drawCount = ruleset.get(Rule.DRAW_COUNT);
-        cardsDrawn = player.addCardsToHand(cards.draw(new Card[drawCount], drawCount));
+        cardsDrawn = player.addCardsToHand(cards, drawCount);
 
         if (player.getHandSize() == 0) {
             channel.sendMessageEmbeds(new EmbedBuilder()

@@ -1,6 +1,7 @@
 package com.adex.fluxbot.game;
 
 import com.adex.fluxbot.game.card.Card;
+import com.adex.fluxbot.game.card.Pile;
 import com.adex.fluxbot.game.keeper.Keeper;
 import com.adex.fluxbot.game.rule.Rule;
 import org.jetbrains.annotations.Nullable;
@@ -39,7 +40,7 @@ public class Player {
 
         keepers = new ArrayList<>();
 
-        int cardCount = Math.min(FluxGame.CARDS_IN_STARTING_HAND, game.ruleset.get(Rule.HAND_LIMIT));
+        int cardCount = Math.min(FluxGame.CARDS_IN_STARTING_HAND, game.getRule(Rule.HAND_LIMIT));
         hand = new ArrayList<>();
 
         Card[] cards = game.cards.draw(new Card[cardCount], cardCount);
@@ -59,6 +60,10 @@ public class Player {
 
     public int getHandSize() {
         return hand.size();
+    }
+
+    public int addCardsToHand(Pile<Card> cards, int amount) {
+        return addCardsToHand(cards.draw(new Card[amount], amount));
     }
 
     public int addCardsToHand(@Nullable Card... cards) {

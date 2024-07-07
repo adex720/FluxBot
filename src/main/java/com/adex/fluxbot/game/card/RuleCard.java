@@ -26,6 +26,6 @@ public class RuleCard extends Card {
 
     @Override
     public void onPlay(FluxGame game, EventContext context) {
-        game.ruleset.set(rule, value);
+        game.setRule(rule, value);
     }
 }

@@ -45,7 +45,7 @@ public class Pile<T> {
      * Shuffles the discard pile into the drawing pile if necessary.
      * Returns null if there are no cards in either pile.
      * If there are some, but not enough cards in the piles,
-     * all the cards left will be added to the beginning of the array and the remaining values will be set to null.
+     * all the cards left will be added to the beginning of the array and the remaining values will be setRule to null.
      *
      * @param amount Amount of cards to draw.
      * @param array  Array for the cards.
@@ -106,7 +106,7 @@ public class Pile<T> {
      * Returns the specified amount of cards from the top of the discard pile and removes them from the pile.
      * Returns null if there are no cards in the discard pile.
      * If there are some, but not enough cards in the pile,
-     * all the cards left will be added to the beginning of the array and the remaining values will be set to null.
+     * all the cards left will be added to the beginning of the array and the remaining values will be setRule to null.
      *
      * @param amount Amount of cards to draw.
      * @param array  Array for the cards.
