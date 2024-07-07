@@ -1,5 +1,7 @@
 package com.adex.fluxbot.game.keeper;
 
+import com.adex.fluxbot.game.card.KeeperCard;
+
 /**
  * Keepers are a type of card played in front of each player.
  */
@@ -11,6 +13,8 @@ public class Keeper {
     public final String emote;
     public final int id;
 
+    private KeeperCard card;
+
     /**
      * @param name  Name of the keeper.
      * @param emote Name of the emote on Discord and the emote's id, separated by a colon.
@@ -19,6 +23,8 @@ public class Keeper {
         this.name = name;
         this.emote = emote;
         id = KEEPER_COUNT++;
+
+        card = null;
     }
 
     /**
@@ -40,5 +46,13 @@ public class Keeper {
      */
     public String getName() {
         return name;
+    }
+
+    public void setCard(KeeperCard card) {
+        this.card = card;
+    }
+
+    public KeeperCard getCard() {
+        return card;
     }
 }

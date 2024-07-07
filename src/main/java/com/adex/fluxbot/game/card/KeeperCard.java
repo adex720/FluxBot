@@ -1,6 +1,7 @@
 package com.adex.fluxbot.game.card;
 
-import com.adex.fluxbot.game.Flux;
+import com.adex.fluxbot.discord.command.EventContext;
+import com.adex.fluxbot.game.FluxGame;
 import com.adex.fluxbot.game.keeper.Keeper;
 
 public class KeeperCard extends Card {
@@ -13,7 +14,7 @@ public class KeeperCard extends Card {
     }
 
     @Override
-    public void onPlay(Flux game) {
+    public void onPlay(FluxGame game, EventContext context) {
         game.currentPlayer().getKeepers().add(keeper);
     }
 }

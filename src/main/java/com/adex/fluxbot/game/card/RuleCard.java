@@ -1,6 +1,7 @@
 package com.adex.fluxbot.game.card;
 
-import com.adex.fluxbot.game.Flux;
+import com.adex.fluxbot.discord.command.EventContext;
+import com.adex.fluxbot.game.FluxGame;
 import com.adex.fluxbot.game.rule.Rule;
 
 /**
@@ -24,7 +25,7 @@ public class RuleCard extends Card {
     public final int value;
 
     @Override
-    public void onPlay(Flux game) {
+    public void onPlay(FluxGame game, EventContext context) {
         game.ruleset.set(rule, value);
     }
 }

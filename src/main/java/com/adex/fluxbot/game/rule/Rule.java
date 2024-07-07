@@ -8,7 +8,7 @@ public enum Rule {
     PLAY_COUNT("Play", 0, -1, 5, 1, DisplayStyle.ALWAYS),
     DRAW_COUNT("Draw", 1, 1, 5, 1, DisplayStyle.ALWAYS),
     HAND_LIMIT("Hand Limit", 2, -1, 5, -1, DisplayStyle.WHEN_NOT_DEFAULT),
-    KEEPER_LIMIT("Keeper Limit", 3, 0, 5, 0, DisplayStyle.WHEN_NOT_DEFAULT),
+    KEEPER_LIMIT("Keeper Limit", 3, -1, 5, -1, DisplayStyle.WHEN_NOT_DEFAULT),
     KEEPERS_SECRET("Keepers hidden", 4, -1, 1, 0, DisplayStyle.WHEN_NOT_DEFAULT),
     FINAL_CARD_RANDOM("Final card random", 5, 0, 0, 0, DisplayStyle.ONLY_NAME_AND_WHEN_NOT_DEFAULT);
 

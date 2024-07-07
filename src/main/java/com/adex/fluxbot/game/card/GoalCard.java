@@ -1,6 +1,7 @@
 package com.adex.fluxbot.game.card;
 
-import com.adex.fluxbot.game.Flux;
+import com.adex.fluxbot.discord.command.EventContext;
+import com.adex.fluxbot.game.FluxGame;
 import com.adex.fluxbot.game.goal.Goal;
 
 /**
@@ -16,7 +17,7 @@ public class GoalCard extends Card {
     public final Goal goal;
 
     @Override
-    public void onPlay(Flux game) {
+    public void onPlay(FluxGame game, EventContext context) {
         game.setGoal(goal);
     }
 }

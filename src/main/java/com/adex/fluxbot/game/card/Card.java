@@ -1,30 +1,36 @@
 package com.adex.fluxbot.game.card;
 
-import com.adex.fluxbot.game.Flux;
+import com.adex.fluxbot.discord.command.EventContext;
+import com.adex.fluxbot.game.FluxGame;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * An instance of this class is a card which can be played.
  */
 public abstract class Card {
 
-    private static final Set<Card> CARDS = new HashSet<>();
+    private static final ArrayList<Card> CARDS = new ArrayList<>();
+    private static int CARD_AMOUNT = 0;
+
+    public final String name;
+    public final Type type;
+    public final int id;
 
     public Card(String name, Type type) {
         this.name = name;
         this.type = type;
+        this.id = CARD_AMOUNT++;
 
         CARDS.add(this);
     }
 
-    public final String name;
-    public final Type type;
+    public static int getCardAmount() {
+        return CARD_AMOUNT;
+    }
 
-    public abstract void onPlay(Flux game);
+    public abstract void onPlay(FluxGame game, EventContext context);
 
     public enum Type {
         RULE(0xe0c810), ACTION(0x0718ad), KEEPER(0x19d108), GOAL(0xe310ca);
@@ -45,5 +51,9 @@ public abstract class Card {
         ArrayList<Card> cards = new ArrayList<>(CARDS);
         Collections.shuffle(cards);
         return cards;
+    }
+
+    public static Card getCardById(int id) {
+        return CARDS.get(id);
     }
 }

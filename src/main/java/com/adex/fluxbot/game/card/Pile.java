@@ -134,4 +134,12 @@ public class Pile<T> {
         discardPile.clear();
     }
 
+    public int getCardCountInDrawPile() {
+        return drawPile.size();
+    }
+
+    public int getCardCountInDiscardPile() {
+        return discardPile.size();
+    }
+
 }
