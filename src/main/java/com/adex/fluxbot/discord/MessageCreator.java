@@ -1,5 +1,6 @@
 package com.adex.fluxbot.discord;
 
+import com.adex.fluxbot.game.card.Card;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
@@ -7,7 +8,7 @@ import java.util.Date;
 
 public class MessageCreator {
 
-    public static final int DEFAULT_COLOR = 0xe0c810;
+    public static final int DEFAULT_COLOR = Card.Type.RULE.color;
 
     public static final String COMMAND_TIPS = """
             Use /cards to view your cards
@@ -27,8 +28,38 @@ public class MessageCreator {
         return embedBuilder.build();
     }
 
+    public static MessageEmbed createDefault(String title, Card.Type type, MessageEmbed.Field... fields) {
+        EmbedBuilder embedBuilder = new EmbedBuilder()
+                .setTitle(title)
+                .setColor(type.color)
+                .setTimestamp(new Date().toInstant());
+        for (MessageEmbed.Field field : fields) {
+            embedBuilder.addField(field);
+        }
+        return embedBuilder.build();
+    }
+
+    public static MessageEmbed createDefault(String title, int color, MessageEmbed.Field... fields) {
+        EmbedBuilder embedBuilder = new EmbedBuilder()
+                .setTitle(title)
+                .setColor(color)
+                .setTimestamp(new Date().toInstant());
+        for (MessageEmbed.Field field : fields) {
+            embedBuilder.addField(field);
+        }
+        return embedBuilder.build();
+    }
+
     public static MessageEmbed createDefault(String title, String fieldTitle, String fieldContent) {
         return createDefault(title, new MessageEmbed.Field(fieldTitle, fieldContent, true));
+    }
+
+    public static MessageEmbed createDefault(String title, Card.Type type, String fieldTitle, String fieldContent) {
+        return createDefault(title, type, new MessageEmbed.Field(fieldTitle, fieldContent, true));
+    }
+
+    public static MessageEmbed createDefault(String title, int color, String fieldTitle, String fieldContent) {
+        return createDefault(title, color, new MessageEmbed.Field(fieldTitle, fieldContent, true));
     }
 
 

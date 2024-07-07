@@ -18,4 +18,9 @@ public abstract class Goal {
     }
 
     public abstract boolean check(Player player);
+
+    /**
+     * Should be in a format which can be used in "Player wins if they have DESCRIPTION".
+     */
+    public abstract String getDescription();
 }

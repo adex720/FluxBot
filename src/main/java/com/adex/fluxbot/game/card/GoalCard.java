@@ -1,5 +1,6 @@
 package com.adex.fluxbot.game.card;
 
+import com.adex.fluxbot.discord.MessageCreator;
 import com.adex.fluxbot.discord.command.EventContext;
 import com.adex.fluxbot.game.FluxGame;
 import com.adex.fluxbot.game.goal.Goal;
@@ -19,5 +20,6 @@ public class GoalCard extends Card {
     @Override
     public void onPlay(FluxGame game, EventContext context) {
         game.setGoal(goal);
+        context.getSlashCommandEvent().replyEmbeds(MessageCreator.createDefault("New goal", Type.GOAL.color, goal.name, goal.getDescription())).queue();
     }
 }

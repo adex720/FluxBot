@@ -25,4 +25,9 @@ public class Have2KeepersGoal extends Goal {
         ArrayList<Keeper> keepers = player.getKeepers();
         return keepers.contains(keeper1) && keepers.contains(keeper2);
     }
+
+    @Override
+    public String getDescription() {
+        return "both " + keeper1.getEmoteAndName() + " and " + keeper2.getEmoteAndName() + " in front of them";
+    }
 }

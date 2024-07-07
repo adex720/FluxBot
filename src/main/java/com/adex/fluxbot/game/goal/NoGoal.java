@@ -15,4 +15,9 @@ public class NoGoal extends Goal {
     public boolean check(Player player) {
         return false;
     }
+
+    @Override
+    public String getDescription() {
+        return null;
+    }
 }

@@ -27,4 +27,9 @@ public class HaveKeeperWithoutOtherGoal extends Goal {
 
         return true;
     }
+
+    @Override
+    public String getDescription() {
+        return winning.getEmoteAndName() + " in front of them and no player has " + notAllowed.getEmoteAndName() + " in front of them";
+    }
 }

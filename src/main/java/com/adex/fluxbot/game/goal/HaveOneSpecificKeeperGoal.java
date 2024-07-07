@@ -20,4 +20,9 @@ public class HaveOneSpecificKeeperGoal extends Goal {
     public boolean check(Player player) {
         return player.getKeepers().size() == 1 && player.getKeepers().get(0) == keeper;
     }
+
+    @Override
+    public String getDescription() {
+        return keeper.getEmoteAndName() + " in front of them and it is their only keeper";
+    }
 }

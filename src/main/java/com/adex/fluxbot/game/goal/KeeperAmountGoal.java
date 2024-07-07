@@ -1,5 +1,6 @@
 package com.adex.fluxbot.game.goal;
 
+import com.adex.fluxbot.Util;
 import com.adex.fluxbot.game.Player;
 
 /**
@@ -17,5 +18,10 @@ public class KeeperAmountGoal extends Goal {
     @Override
     public boolean check(Player player) {
         return player.getKeepers().size() >= amount;
+    }
+
+    @Override
+    public String getDescription() {
+        return "at least " + Util.combineCountAndWord(amount, "keeper") + " in front of them";
     }
 }
