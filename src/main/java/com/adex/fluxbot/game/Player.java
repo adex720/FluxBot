@@ -77,6 +77,10 @@ public class Player {
         return cardsDrawn;
     }
 
+    public void removeCardFromHand(Card card){
+        hand.remove(card);
+    }
+
     /**
      * Returns an {@link ArrayList<Keeper>} of the player's played keepers.
      */
