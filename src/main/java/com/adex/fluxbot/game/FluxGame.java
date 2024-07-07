@@ -94,11 +94,21 @@ public class FluxGame {
      *
      * @param rule  Rule
      * @param value New value
+     * @return true if cards need to be discarded or a keeper to hide must be chosen.
      */
-    public void set(Rule rule, int value) {
+    public boolean set(Rule rule, int value) {
         ruleset.set(rule, value);
-        if (rule == Rule.HAND_LIMIT) handLimitChanged();
-        if (rule == Rule.KEEPER_LIMIT) keeperLimitChanged();
+
+        boolean waitForUser = false;
+        if (rule == Rule.HAND_LIMIT) {
+            if (handLimitChanged()) waitForUser = true;
+        } else if (rule == Rule.KEEPER_LIMIT) {
+            if (keeperLimitChanged()) waitForUser = true;
+        } else if (rule == Rule.KEEPERS_SECRET) {
+            if (keepersSecretChanged()) waitForUser = true;
+        }
+
+        return waitForUser;
     }
 
     /**
@@ -107,11 +117,21 @@ public class FluxGame {
      *
      * @param ruleId Id of the rule
      * @param value  New value
+     * @return true if cards need to be discarded or a keeper to hide must be chosen.
      */
-    public void set(int ruleId, int value) {
+    public boolean set(int ruleId, int value) {
         ruleset.set(ruleId, value);
-        if (ruleId == Rule.HAND_LIMIT.id) handLimitChanged();
-        if (ruleId == Rule.KEEPER_LIMIT.id) keeperLimitChanged();
+
+        boolean waitForUser = false;
+        if (ruleId == Rule.HAND_LIMIT.id) {
+            if (handLimitChanged()) waitForUser = true;
+        } else if (ruleId == Rule.KEEPER_LIMIT.id) {
+            if (keeperLimitChanged()) waitForUser = true;
+        } else if (ruleId == Rule.KEEPERS_SECRET.id) {
+            if (keepersSecretChanged()) waitForUser = true;
+        }
+
+        return waitForUser;
     }
 
     /**
@@ -121,8 +141,7 @@ public class FluxGame {
      */
     public void reset(Rule rule) {
         ruleset.reset(rule);
-        if (rule == Rule.HAND_LIMIT) handLimitChanged();
-        if (rule == Rule.KEEPER_LIMIT) keeperLimitChanged();
+        if (rule == Rule.KEEPERS_SECRET) keepersSecretChanged();
     }
 
     /**
@@ -132,8 +151,7 @@ public class FluxGame {
      */
     public void reset(int ruleId) {
         ruleset.reset(ruleId);
-        if (ruleId == Rule.HAND_LIMIT.id) handLimitChanged();
-        if (ruleId == Rule.KEEPER_LIMIT.id) keeperLimitChanged();
+        if (ruleId == Rule.KEEPERS_SECRET.id) keepersSecretChanged();
     }
 
     /**
@@ -141,8 +159,7 @@ public class FluxGame {
      */
     public void resetAll() {
         ruleset.resetAll();
-        handLimitChanged();
-        keeperLimitChanged();
+        keepersSecretChanged();
     }
 
     /**
@@ -248,17 +265,31 @@ public class FluxGame {
     /**
      * Checks hand limit from other players.
      * Should always be called when hand limit is changed.
+     * Doesn't need to be called if the limit is removed.
+     *
+     * @return true if cards need to be discarded.
      */
-    public void handLimitChanged() {
-        checkHandLimitFromOthers(currentPlayer());
+    public boolean handLimitChanged() {
+        return checkHandLimitFromOthers(currentPlayer());
     }
 
     /**
      * Checks keeper limit from other players.
      * Should always be called when keeper limit is changed.
+     * Doesn't need to be called if the limit is removed.
+     *
+     * @return true if cards need to be discarded.
      */
-    public void keeperLimitChanged() {
-        checkKeeperLimitFromOthers(currentPlayer());
+    public boolean keeperLimitChanged() {
+        return checkKeeperLimitFromOthers(currentPlayer());
+    }
+
+    /**
+     * @return true if at least one player needs to select which card to hide.
+     */
+    public boolean keepersSecretChanged() {
+        //TODO
+        return false;
     }
 
     public TurnState getTurnState() {
