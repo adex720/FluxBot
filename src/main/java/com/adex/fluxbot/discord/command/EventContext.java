@@ -9,6 +9,8 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
+import java.util.Random;
+
 /**
  * Gives access to different information regarding a slash command interaction or a button press interaction.
  */
@@ -26,8 +28,11 @@ public class EventContext {
     private Boolean inGame;
     private FluxGame game;
 
-    public EventContext(SlashCommandInteractionEvent event, FluxBot bot) {
+    private final Random random;
+
+    public EventContext(SlashCommandInteractionEvent event, FluxBot bot, Random random) {
         this.bot = bot;
+        this.random = random;
         fromCommand = false;
         slashCommandEvent = event;
         buttonEvent = null;
@@ -69,6 +74,10 @@ public class EventContext {
 
     public JDA getJda() {
         return (fromCommand ? slashCommandEvent : buttonEvent).getJDA();
+    }
+
+    public Random getRandom() {
+        return random;
     }
 
     public boolean inGame() {

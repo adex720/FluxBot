@@ -18,7 +18,6 @@ public class CommandPlay extends Command {
 
     @Override
     public void execute(EventContext context) {
-        MessageChannel channel = context.getChannel();
         SlashCommandInteractionEvent event = context.getSlashCommandEvent();
         if (!context.inGame()) {
             event.replyEmbeds(MessageCreator.createDefault("Play", "Cannot play card", "You are not in a game"))

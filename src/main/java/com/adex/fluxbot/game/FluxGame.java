@@ -11,6 +11,7 @@ import com.adex.fluxbot.game.rule.Rule;
 import com.adex.fluxbot.game.rule.Ruleset;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -255,6 +256,19 @@ public class FluxGame {
     }
 
     /**
+     * Plays a random card from the current player's hand.
+     */
+    public void playRandomCardFromHand(EventContext context) {
+        Player player = currentPlayer();
+        if (player.getHandSize() == 0) return;
+        Card card = player.getRandomCard(context.getRandom(), true);
+        if (card == null) return;
+
+        card.onPlay(this, context);
+        cardPlayed();
+    }
+
+    /**
      * Increases cards played this turn count.
      * Starts next turn if this was the last card to be played.
      * Should only be called if the card should count towards the play rule limit. (Played with /play)
@@ -385,10 +399,39 @@ public class FluxGame {
      */
     public void endTurn() {
         if (checkHandLimit(currentPlayer())) return;
-        if (checkKeeperLimit(currentPlayer())) return;
+        handLimitIsMet();
+    }
 
+    /**
+     * Should be called after hand limit is met when checked from the current player.
+     * Proceeds to the next steps of ending a turn.
+     */
+    private void handLimitIsMet() {
+        if (checkKeeperLimit(currentPlayer())) return;
+        keeperLimitIsMet();
+    }
+
+    /**
+     * Should be called after keeper limit is met when checked from the current player.
+     * Proceeds to the next steps of ending a turn.
+     */
+    private void keeperLimitIsMet() {
         prepareNextTurn();
         startTurn();
+    }
+
+    private void handLimitIsMetForOthers() {
+        Player player = currentPlayer();
+        if (cardsPlayed >= getRule(Rule.PLAY_COUNT) || player.getHandSize() == 0) {
+            endTurn();
+            return;
+        }
+
+        turnState = TurnState.WAITING_CARD_TO_PLAY;
+    }
+
+    private void keeperLimitSsMetForOthers() {
+
     }
 
     /**
@@ -488,6 +531,46 @@ public class FluxGame {
                 tooMany + " have too many keepers")).queue();
 
         return true;
+    }
+
+    /**
+     * Discards the card from the player's hand.
+     * Adds the card to the discard pile.
+     * Checks if more cards need to be discarded.
+     * Continues the game if not.
+     *
+     * @param card   Card that was discarded.
+     * @param player Player discarding the card
+     * @param event  Event to reply to
+     */
+    public void discardCard(Card card, Player player, SlashCommandInteractionEvent event) {
+        player.removeCardFromHand(card);
+        event.replyEmbeds(MessageCreator.createDefault("Card discarding", card.type,
+                player.username + "discarded card:",
+                card.getEmoteAndName())).queue();
+
+        cards.addToDiscardPile(card);
+
+        if (turnState == TurnState.WAITING_FOR_CARD_DISCARDING_CURRENT) { // Current player is discarding
+            if (player.getHandSize() <= getRule(Rule.HAND_LIMIT)) {
+                handLimitIsMet();
+            }
+        } else { // Other than the current player is discarding
+            boolean extraCards = false;
+            for (Player checking : players) {
+                // Current player may have extra cards when a new rule is played.
+                if (checking.userId == player.userId) continue;
+
+                if (checking.getHandSize() > getRule(Rule.HAND_LIMIT)) {
+                    extraCards = true;
+                    break;
+                }
+            }
+
+            if (!extraCards) {
+                handLimitIsMetForOthers();
+            }
+        }
     }
 
     /**

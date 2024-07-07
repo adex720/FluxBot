@@ -7,6 +7,7 @@ import com.adex.fluxbot.game.rule.Rule;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * A player in the game
@@ -76,6 +77,23 @@ public class Player {
         }
         if (cardsDrawn > 0) game.cardsDrawn();
         return cardsDrawn;
+    }
+
+    /**
+     * Returns a random card from the player's hand.
+     * Returns null if the player has no hand cards.
+     *
+     * @param random Random to use
+     * @param remove Should the card be removed from the hand.
+     */
+    @Nullable
+    public Card getRandomCard(Random random, boolean remove) {
+        if (hand.isEmpty()) return null;
+
+        int size = getHandSize();
+        int index = random.nextInt(size);
+        if (remove) return hand.remove(index);
+        return hand.get(index);
     }
 
     public void removeCardFromHand(Card card) {

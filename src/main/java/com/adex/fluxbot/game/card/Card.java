@@ -57,4 +57,12 @@ public abstract class Card {
     public static Card getCardById(int id) {
         return CARDS.get(id);
     }
+
+    public String getEmote() {
+        return "TODO";
+    }
+
+    public String getEmoteAndName() {
+        return getEmote() + " " + name;
+    }
 }

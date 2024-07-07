@@ -2,6 +2,7 @@ package com.adex.fluxbot.discord.listeners;
 
 import com.adex.fluxbot.discord.FluxBot;
 import com.adex.fluxbot.discord.command.Command;
+import com.adex.fluxbot.discord.command.game.CommandDiscard;
 import com.adex.fluxbot.discord.command.game.CommandPlay;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -28,6 +29,7 @@ public class CommandListener extends ListenerAdapter {
      */
     public void initCommands() {
         addCommand(new CommandPlay());
+        addCommand(new CommandDiscard());
     }
 
     /**
