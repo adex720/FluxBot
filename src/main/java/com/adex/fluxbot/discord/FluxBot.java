@@ -13,7 +13,7 @@ public class FluxBot {
 
     private final JDA jda;
 
-    public final Logger logger;
+    private final Logger logger;
 
     public final GameManager gameManager;
 
@@ -44,5 +44,7 @@ public class FluxBot {
         commandListener.registerCommands(jda);
     }
 
-
+    public Logger getLogger() {
+        return logger;
+    }
 }

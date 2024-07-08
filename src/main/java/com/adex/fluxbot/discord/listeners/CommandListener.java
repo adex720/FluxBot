@@ -9,10 +9,18 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class CommandListener extends ListenerAdapter {
+
+    private final HashMap<Long, Long> cooldowns;
+    public static final int COOLDOWN = 500;
+    // minimum time difference between 2 interactions in milliseconds.
+    // If when making an interaction the cooldown is on, no response will be given or action done.
 
     private final FluxBot bot;
 
@@ -22,6 +30,8 @@ public class CommandListener extends ListenerAdapter {
         this.bot = bot;
 
         commands = new HashSet<>();
+
+        cooldowns = new HashMap<>();
     }
 
     /**
@@ -52,6 +62,10 @@ public class CommandListener extends ListenerAdapter {
         for (Command command : commands) {
             data.add(command.getCommandData());
         }
+
+        jda.updateCommands().addCommands(data).queue();
+
+        bot.getLogger().info("Registered all commands");
     }
 
     @Override
@@ -60,5 +74,27 @@ public class CommandListener extends ListenerAdapter {
 
         String commandName = event.getName();
         long userId = event.getUser().getIdLong();
+
+        long time = event.getTimeCreated().toInstant().toEpochMilli();
+
+        if (isOnCooldown(userId, time)) return;
+        addCooldown(userId, time);
+    }
+
+    public void addCooldown(long userId, long time) {
+        cooldowns.put(userId, time + COOLDOWN);
+
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                cooldowns.remove(userId, time + COOLDOWN);
+            }
+        }, COOLDOWN);
+    }
+
+    public boolean isOnCooldown(long userId, long time) {
+        Long cooldownEnds = cooldowns.get(userId);
+        if (cooldownEnds == null) return false;
+        return cooldownEnds > time;
     }
 }

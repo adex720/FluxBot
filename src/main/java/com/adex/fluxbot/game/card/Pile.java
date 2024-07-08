@@ -74,7 +74,8 @@ public class Pile<T> {
      *
      * @param cards Cards
      */
-    public void addToDiscardPile(T... cards) {
+    @SafeVarargs
+    public final void addToDiscardPile(T... cards) {
         for (T card : cards) {
             discardPile.addFirst(card);
         }
