@@ -11,6 +11,7 @@ import com.adex.fluxbot.game.rule.Rule;
 import com.adex.fluxbot.game.rule.Ruleset;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,7 +44,7 @@ public class FluxGame {
 
 
     // Discord channel info
-    private final TextChannel channel;
+    private final MessageChannel channel;
     private final long channelId;
     private final long guildId;
 
@@ -171,6 +172,10 @@ public class FluxGame {
      */
     public Player currentPlayer() {
         return players.get(currentPlayerId);
+    }
+
+    public long getHostUserId() {
+        return players.get(0).userId;
     }
 
     /**

@@ -4,7 +4,7 @@ import com.adex.fluxbot.discord.FluxBot;
 import com.adex.fluxbot.game.FluxGame;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -109,14 +109,22 @@ public class EventContext {
         return user;
     }
 
+    public String getUsername() {
+        return user.getName();
+    }
+
+    public String getUserAsMention() {
+        return "<@" + getUserId() + "";
+    }
+
     public long getUserId() {
         return user.getIdLong();
     }
 
-    public MessageChannel getChannel() {
-        if (fromCommand) return slashCommandEvent.getChannel();
-        if (fromButton) return buttonEvent.getChannel();
-        if (fromAutoComplete) return autoCompleteEvent.getChannel();
+    public TextChannel getChannel() {
+        if (fromCommand) return (TextChannel) slashCommandEvent.getChannel();
+        if (fromButton) return (TextChannel) buttonEvent.getChannel();
+        if (fromAutoComplete) return (TextChannel) autoCompleteEvent.getChannel();
         return null;
     }
 

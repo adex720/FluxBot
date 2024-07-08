@@ -33,7 +33,7 @@ public class FluxBot {
 
         random = ThreadLocalRandom.current();
 
-        gameManager = new GameManager();
+        gameManager = new GameManager(0);
 
         commandListener = new CommandListener(this);
         commandListener.initCommands();
