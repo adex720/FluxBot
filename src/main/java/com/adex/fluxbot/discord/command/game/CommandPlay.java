@@ -6,9 +6,10 @@ import com.adex.fluxbot.discord.command.EventContext;
 import com.adex.fluxbot.game.FluxGame;
 import com.adex.fluxbot.game.Player;
 import com.adex.fluxbot.game.card.Card;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 public class CommandPlay extends Command {
 
@@ -62,5 +63,10 @@ public class CommandPlay extends Command {
         card.onPlay(game, context);
         player.removeCardFromHand(card);
         game.cardPlayed();
+    }
+
+    @Override
+    public OptionData[] getOptionData() {
+        return new OptionData[]{new OptionData(OptionType.INTEGER, "card", "Card to play", true, true)};
     }
 }

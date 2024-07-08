@@ -2,6 +2,7 @@ package com.adex.fluxbot.game.card;
 
 import com.adex.fluxbot.discord.command.EventContext;
 import com.adex.fluxbot.game.FluxGame;
+import net.dv8tion.jda.api.interactions.commands.Command;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -64,5 +65,9 @@ public abstract class Card {
 
     public String getEmoteAndName() {
         return getEmote() + " " + name;
+    }
+
+    public Command.Choice getAsChoice() {
+        return new Command.Choice(name, id);
     }
 }

@@ -1,6 +1,7 @@
 package com.adex.fluxbot.discord.command;
 
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
 public abstract class Command {
@@ -24,8 +25,15 @@ public abstract class Command {
 
     public abstract void execute(EventContext context);
 
-    public CommandData getCommandData() {
-        return new CommandDataImpl(name, description);
+    public OptionData[] getOptionData() {
+        return new OptionData[0];
     }
 
+    public CommandData getCommandData() {
+        return new CommandDataImpl(name, description).addOptions(getOptionData());
+    }
+
+    public String getName() {
+        return name;
+    }
 }

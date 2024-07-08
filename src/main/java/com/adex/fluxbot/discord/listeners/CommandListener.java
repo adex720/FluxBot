@@ -1,19 +1,16 @@
 package com.adex.fluxbot.discord.listeners;
 
 import com.adex.fluxbot.discord.FluxBot;
+import com.adex.fluxbot.discord.MessageCreator;
 import com.adex.fluxbot.discord.command.Command;
-import com.adex.fluxbot.discord.command.game.CommandDiscard;
-import com.adex.fluxbot.discord.command.game.CommandPlay;
+import com.adex.fluxbot.discord.command.Commands;
+import com.adex.fluxbot.discord.command.EventContext;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 public class CommandListener extends ListenerAdapter {
 
@@ -38,8 +35,8 @@ public class CommandListener extends ListenerAdapter {
      * Initializes commands and adds them to the commands setRule.
      */
     public void initCommands() {
-        addCommand(new CommandPlay());
-        addCommand(new CommandDiscard());
+        addCommand(Commands.COMMAND_PLAY);
+        addCommand(Commands.COMMAND_DISCARD);
     }
 
     /**
@@ -76,9 +73,20 @@ public class CommandListener extends ListenerAdapter {
         long userId = event.getUser().getIdLong();
 
         long time = event.getTimeCreated().toInstant().toEpochMilli();
-
         if (isOnCooldown(userId, time)) return;
         addCooldown(userId, time);
+
+        EventContext context = new EventContext(event, bot);
+        for (Command command : commands) {
+            if (command.name.equals(commandName)) {
+                try {
+                    command.execute(context);
+                } catch (Exception e) {
+                    event.replyEmbeds(MessageCreator.createErrorMessage(e)).queue();
+                }
+                break;
+            }
+        }
     }
 
     public void addCooldown(long userId, long time) {

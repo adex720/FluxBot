@@ -4,11 +4,14 @@ import com.adex.fluxbot.game.card.Card;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
+import java.util.Arrays;
 import java.util.Date;
 
 public class MessageCreator {
 
     public static final int DEFAULT_COLOR = Card.Type.RULE.color;
+
+    public static final int ERROR_COLOR = 0x8c0101;
 
     public static final String COMMAND_TIPS = """
             Use /cards to view your cards
@@ -60,6 +63,10 @@ public class MessageCreator {
 
     public static MessageEmbed createDefault(String title, int color, String fieldTitle, String fieldContent) {
         return createDefault(title, color, new MessageEmbed.Field(fieldTitle, fieldContent, true));
+    }
+
+    public static MessageEmbed createErrorMessage(Exception e) {
+        return createDefault("Exception", ERROR_COLOR, e.getMessage(), Arrays.toString(e.getStackTrace()));
     }
 
 

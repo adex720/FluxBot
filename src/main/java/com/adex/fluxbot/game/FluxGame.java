@@ -180,6 +180,20 @@ public class FluxGame {
         return players.get(currentPlayerId).userId;
     }
 
+    public boolean isUserInGame(long userId) {
+        for (Player player : players) {
+            if (player.userId == userId) return true;
+        }
+        return false;
+    }
+
+    public Player getPlayerByUserId(long userId) {
+        for (Player player : players) {
+            if (player.userId == userId) return player;
+        }
+        return null;
+    }
+
     public ArrayList<Player> getPlayers() {
         return players;
     }
@@ -191,9 +205,7 @@ public class FluxGame {
      * @param userId Discord user id of the player
      */
     public void addPlayer(long userId) {
-        for (Player player : players) {
-            if (player.userId == userId) return; // player is already in the
-        }
+        if (isUserInGame(userId)) return;
 
         if (currentPlayerId == 0) {
             players.add(new Player(userId, this));
@@ -430,7 +442,7 @@ public class FluxGame {
         turnState = TurnState.WAITING_CARD_TO_PLAY;
     }
 
-    private void keeperLimitSsMetForOthers() {
+    private void keeperLimitIsMetForOthers() {
 
     }
 
