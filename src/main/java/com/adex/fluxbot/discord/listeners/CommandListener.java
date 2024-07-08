@@ -35,8 +35,14 @@ public class CommandListener extends ListenerAdapter {
      * Initializes commands and adds them to the commands setRule.
      */
     public void initCommands() {
+        addCommand(Commands.COMMAND_CREATE);
+        addCommand(Commands.COMMAND_JOIN);
+        addCommand(Commands.COMMAND_LEAVE);
+        addCommand(Commands.COMMAND_START);
+
         addCommand(Commands.COMMAND_PLAY);
         addCommand(Commands.COMMAND_DISCARD);
+        addCommand(Commands.COMMAND_REMOVE);
     }
 
     /**
