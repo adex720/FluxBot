@@ -24,6 +24,6 @@ public class CommandCreate extends Command {
         long userId = context.getUserId();
         FluxGame game = context.getBot().getGameManager().createGame(userId, context.getUsername(), context.getChannel());
         event.replyEmbeds(MessageCreator.createDefault("New game", context.getUsername() + " created a new game"
-                , "Join with /join " + context.getUserAsMention())).queue();
+                , "Invite users with /invite\nJoin with /join " + context.getUserAsMention())).queue();
     }
 }
