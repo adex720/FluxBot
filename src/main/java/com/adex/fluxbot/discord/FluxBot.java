@@ -19,7 +19,7 @@ public class FluxBot {
 
     private final Logger logger;
 
-    public final GameManager gameManager;
+    private final GameManager gameManager;
 
     private final CommandListener commandListener;
     private final AutoCompleteListener autoCompleteListener;
@@ -66,6 +66,10 @@ public class FluxBot {
 
     public AutoCompleteListener getAutoCompleteListener() {
         return autoCompleteListener;
+    }
+
+    public GameManager getGameManager() {
+        return gameManager;
     }
 
     public Logger getLogger() {

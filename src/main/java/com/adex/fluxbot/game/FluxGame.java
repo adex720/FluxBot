@@ -16,6 +16,8 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class FluxGame {
 
@@ -26,6 +28,11 @@ public class FluxGame {
 
     private final ArrayList<Player> players;
     private int playerCount;
+
+    public static final int MIN_PLAYER_COUNT = 2;
+    public static final int MAX_PLAYER_COUNT = 8;
+
+    private final Set<Long> invites;
 
     public final Pile<Card> cards;
 
@@ -49,7 +56,7 @@ public class FluxGame {
     private final long channelId;
     private final long guildId;
 
-    public FluxGame(long userId, int gameId, TextChannel channel) {
+    public FluxGame(long userId, String hostUsername, int gameId, TextChannel channel) {
         this.gameId = gameId;
         this.channel = channel;
         this.channelId = channel.getIdLong();
@@ -63,13 +70,14 @@ public class FluxGame {
         goal = Goals.NO_GOAL;
 
         players = new ArrayList<>();
-        players.add(new Player(userId, this));
+        players.add(new Player(userId,hostUsername ,this));
+        invites = new HashSet<>(); // Invites do not expire but they can be cleared when the game starts // TODO: implement that
 
         playerCount = 1;
         currentPlayerId = 0;
         nextPlayerId = 1;
 
-        turnState = TurnState.PAUSED;
+        turnState = TurnState.NOT_STARTED;
         cardsDrawn = 0;
         cardsPlayed = 0;
         cardPlaying = null;
@@ -212,18 +220,22 @@ public class FluxGame {
      *
      * @param userId Discord user id of the player
      */
-    public void addPlayer(long userId) {
+    public void addPlayer(long userId, String username) {
         if (isUserInGame(userId)) return;
 
         if (currentPlayerId == 0) {
-            players.add(new Player(userId, this));
+            players.add(new Player(userId, username, this));
+            sendJoinMessage(userId, username, playerCount, turnState != TurnState.NOT_STARTED);
         } else {
-            players.add(currentPlayerId, new Player(userId, this));
+            players.add(currentPlayerId, new Player(userId, username, this));
+            sendJoinMessage(userId, username, currentPlayerId, turnState != TurnState.NOT_STARTED);
+
+            currentPlayerId++;
+            nextPlayerId++;
         }
 
+        invites.remove(userId);
         playerCount++;
-        currentPlayerId++;
-        nextPlayerId++;
     }
 
     /**
@@ -235,7 +247,6 @@ public class FluxGame {
      * @param kicked Was teh player kicked.
      */
     public void removePlayerFromGame(long userId, boolean kicked) {
-
         int playerIndex = 0;
         Player player = null;
 
@@ -273,6 +284,37 @@ public class FluxGame {
         playerCount--;
 
         channel.sendMessage("<@" + userId + "> has " + (kicked ? "been kicked from" : "left") + " the game.").queue();
+    }
+
+    public void sendJoinMessage(long userId, String username, int playerId, boolean gameStarted) {
+        if (gameStarted) {
+            String previousPlayerMention = players.get(playerId - 1).getAsMention();
+            String nextPlayerMention = currentPlayer().getAsMention();
+            channel.sendMessageEmbeds(MessageCreator.createDefault("New player joined",
+                    username + " has joined the game",
+                    "<@" + userId + "> will play after " + previousPlayerMention + " and before " + nextPlayerMention)).queue();
+            return;
+        }
+        channel.sendMessageEmbeds(MessageCreator.createDefault("New player joined",
+                username + " has joined the game",
+                "There are now " + playerCount + " players. Start the game with /start")).queue();
+    }
+
+    public void invite(long userId) {
+        invites.add(userId);
+    }
+
+    public boolean isInvited(long userId) {
+        return invites.contains(userId);
+    }
+
+    public boolean isInviteNeeded() {
+        if (turnState == TurnState.NOT_STARTED) return settings.get(GameSettings.INVITE_ONLY) == 1;
+        return settings.get(GameSettings.ANYONE_CAN_JOIN_WHEN_ON) == 0;
+    }
+
+    public boolean isFull() {
+        return playerCount >= MAX_PLAYER_COUNT;
     }
 
     /**
@@ -646,6 +688,6 @@ public class FluxGame {
     public enum TurnState {
         WAITING_CARD_TO_PLAY, WAITING_FOR_CARD_CURRENT_PLAYER, WAITING_FOR_OTHERS, WAITING_FOR_CARD_DISCARDING_CURRENT,
         WAITING_FOR_KEEPER_DISCARDING_CURRENT, WAITING_FOR_CARD_DISCARDING_OTHERS, WAITING_FOR_KEEPER_DISCARDING_OTHERS,
-        PAUSED
+        NOT_STARTED
     }
 }

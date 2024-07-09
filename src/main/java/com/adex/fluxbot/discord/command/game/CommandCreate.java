@@ -17,12 +17,12 @@ public class CommandCreate extends Command {
         SlashCommandInteractionEvent event = context.getSlashCommandEvent();
         if (context.inGame()) {
             event.replyEmbeds(MessageCreator.createDefault("New game", "Cannot create game"
-                    , "You are already in a game")).queue();
+                    , "You are already in a game")).setEphemeral(true).queue();
             return;
         }
 
         long userId = context.getUserId();
-        FluxGame game = context.getBot().gameManager.createGame(userId, context.getChannel());
+        FluxGame game = context.getBot().getGameManager().createGame(userId, context.getUsername(), context.getChannel());
         event.replyEmbeds(MessageCreator.createDefault("New game", context.getUsername() + " created a new game"
                 , "Join with /join " + context.getUserAsMention())).queue();
     }

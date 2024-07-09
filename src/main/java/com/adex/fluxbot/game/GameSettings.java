@@ -13,6 +13,7 @@ public class GameSettings {
 
     public static final SettingType INVITE_ONLY = new SettingType(1); // Is invite needed when game hasn't started
     public static final SettingType ANYONE_CAN_JOIN_WHEN_ON = new SettingType(1); // Can game be joined without invite when it has started
+    public static final SettingType ANYONE_CAN_INVITE = new SettingType(1); // Can others than the host invite new players to the game
 
     private int value;
 

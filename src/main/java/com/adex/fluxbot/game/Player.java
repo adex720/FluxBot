@@ -28,13 +28,14 @@ public class Player {
      * Creates a new player for the game.
      * Requires that the rules and card pile are already defined.
      *
-     * @param userId Discord user id of the player.
-     * @param game   Game
+     * @param userId   Discord user id of the player.
+     * @param username Discord username of the player
+     * @param game     Game
      */
-    public Player(long userId, FluxGame game) {
+    public Player(long userId, String username, FluxGame game) {
         this.game = game;
 
-        this.username = "foobah";
+        this.username = username;
         this.userId = userId;
 
         hiddenKeeperIndex = -1;

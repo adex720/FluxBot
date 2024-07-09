@@ -35,9 +35,9 @@ public class GameManager {
         return activeGames.get(playerGameIds.get(userId));
     }
 
-    public FluxGame createGame(long userId, TextChannel channel) {
+    public FluxGame createGame(long userId, String hostUsername, TextChannel channel) {
         int gameId = nextId++;
-        FluxGame game = new FluxGame(userId, gameId, channel);
+        FluxGame game = new FluxGame(userId,hostUsername, gameId, channel);
         activeGames.put(gameId, game);
         playerGameIds.put(userId, gameId);
         return game;
@@ -46,14 +46,15 @@ public class GameManager {
     /**
      * Adds a player to the game if they are not in a game yet.
      *
-     * @param userId Discord user id of the player
-     * @param game   FluxGame game
+     * @param userId   Discord user id of the player
+     * @param userName Discord username of the player
+     * @param game     FluxGame game
      */
-    public void addUserToGame(long userId, FluxGame game) {
+    public void addUserToGame(long userId, String userName, FluxGame game) {
         if (playerGameIds.containsKey(userId)) return;
 
         playerGameIds.put(userId, game.gameId);
-        game.addPlayer(userId);
+        game.addPlayer(userId, userName);
     }
 
     public void removePlayerFromGame(long userId, FluxGame game, boolean kicked) {
