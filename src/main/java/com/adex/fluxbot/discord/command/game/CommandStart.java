@@ -41,7 +41,7 @@ public class CommandStart extends Command {
             return;
         }
 
-        game.startGame();
+        game.startGame(context);
         event.replyEmbeds(MessageCreator.createDefault("Starting game")).queue();
     }
 }
