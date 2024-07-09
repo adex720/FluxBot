@@ -9,6 +9,8 @@ import com.adex.fluxbot.game.card.Card;
 import com.adex.fluxbot.game.rule.Rule;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 public class CommandDiscard extends Command {
 
@@ -65,5 +67,10 @@ public class CommandDiscard extends Command {
             }
             game.discardCard(card, player, event);
         }
+    }
+
+    @Override
+    public OptionData[] getOptionData() {
+        return new OptionData[]{new OptionData(OptionType.INTEGER, "card", "Card to discard", true, true)};
     }
 }

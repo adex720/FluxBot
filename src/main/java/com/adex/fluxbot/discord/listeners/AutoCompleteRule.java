@@ -5,10 +5,12 @@ import com.adex.fluxbot.discord.command.EventContext;
 import com.adex.fluxbot.game.FluxGame;
 import com.adex.fluxbot.game.Player;
 import com.adex.fluxbot.game.card.Card;
+import com.adex.fluxbot.game.keeper.Keeper;
 import net.dv8tion.jda.api.interactions.commands.Command;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class AutoCompleteRule {
 
@@ -48,9 +50,25 @@ public class AutoCompleteRule {
         long userId = context.getUserId();
         Player player = game.getPlayerByUserId(userId);
 
-        String input = context.getTyped();
+        String input = context.getTyped().toLowerCase(Locale.ROOT);
         for (Card card : player.getHand()) {
             if (card.name.contains(input)) list.add(card.getAsChoice());
+        }
+
+        return list;
+    };
+
+    public static final OptionSelector CHOOSE_KEEPER_FROM_FRONT = (context) -> {
+        List<Command.Choice> list = new ArrayList<>();
+        FluxGame game = context.getGame();
+        if (game == null) return list; // User is not in a game so returning empty list.
+
+        long userId = context.getUserId();
+        Player player = game.getPlayerByUserId(userId);
+
+        String input = context.getTyped().toLowerCase(Locale.ROOT);
+        for (Keeper keeper : player.getKeepers()) {
+            if (keeper.name.contains(input)) list.add(keeper.getAsChoice());
         }
 
         return list;

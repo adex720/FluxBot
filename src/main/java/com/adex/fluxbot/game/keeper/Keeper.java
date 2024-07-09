@@ -1,6 +1,7 @@
 package com.adex.fluxbot.game.keeper;
 
 import com.adex.fluxbot.game.card.KeeperCard;
+import net.dv8tion.jda.api.interactions.commands.Command;
 
 /**
  * Keepers are a type of card played in front of each player.
@@ -54,5 +55,9 @@ public class Keeper {
 
     public KeeperCard getCard() {
         return card;
+    }
+
+    public Command.Choice getAsChoice() {
+        return new Command.Choice(name, id);
     }
 }
