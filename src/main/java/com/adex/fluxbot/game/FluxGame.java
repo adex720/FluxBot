@@ -10,6 +10,7 @@ import com.adex.fluxbot.game.goal.Goals;
 import com.adex.fluxbot.game.rule.Rule;
 import com.adex.fluxbot.game.rule.Ruleset;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -48,6 +49,7 @@ public class FluxGame {
     private int cardsDrawn;
     private int cardsPlayed;
 
+    // Should be null always when more specific information about playing the card isn't waited
     private Card cardPlaying;
 
 
@@ -70,7 +72,7 @@ public class FluxGame {
         goal = Goals.NO_GOAL;
 
         players = new ArrayList<>();
-        players.add(new Player(userId,hostUsername ,this));
+        players.add(new Player(userId, hostUsername, this));
         invites = new HashSet<>(); // Invites do not expire but they can be cleared when the game starts // TODO: implement that
 
         playerCount = 1;
@@ -189,6 +191,10 @@ public class FluxGame {
         return players.get(0).userId;
     }
 
+    public String getHostAsMention() {
+        return "<@" + getHostUserId() + ">";
+    }
+
     /**
      * Returns the Discord user id of the player whose turn it is.
      */
@@ -212,6 +218,19 @@ public class FluxGame {
 
     public ArrayList<Player> getPlayers() {
         return players;
+    }
+
+    public String getPlayersAsMentions() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Player player : players) {
+            if (!stringBuilder.isEmpty()) stringBuilder.append(", ");
+            stringBuilder.append(player.getAsMention());
+        }
+        return stringBuilder.toString();
+    }
+
+    public int getPlayerCount() {
+        return playerCount;
     }
 
     /**
@@ -413,6 +432,17 @@ public class FluxGame {
 
     public boolean canPlayCard() {
         return turnState == TurnState.WAITING_CARD_TO_PLAY && cardPlaying == null;
+    }
+
+    public void startGame() {
+        currentPlayerId = 0;
+        nextPlayerId = 1;
+
+        channel.sendMessageEmbeds(MessageCreator.createDefault("Game starting",
+                new MessageEmbed.Field("Turn order:", getPlayersAsMentions(), true),
+                new MessageEmbed.Field("Tip", MessageCreator.COMMAND_TIPS, true))).queue();
+
+        startTurn();
     }
 
     /**
