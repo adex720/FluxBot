@@ -319,6 +319,12 @@ public class FluxGame {
                 "There are now " + playerCount + " players. Start the game with /start")).queue();
     }
 
+    public boolean canInvite(long userId) {
+        if (userId == getHostUserId()) return true;
+
+        return settings.get(GameSettings.ANYONE_CAN_INVITE) == 1;
+    }
+
     public void invite(long userId) {
         invites.add(userId);
     }
