@@ -5,6 +5,7 @@ import com.adex.fluxbot.discord.command.Commands;
 import com.adex.fluxbot.discord.command.EventContext;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -15,12 +16,14 @@ public class AutoCompleteListener extends ListenerAdapter {
     private final Set<AutoCompleteRule> rules;
 
     private final HashMap<Long, Long> cooldowns;
+    private final HashMap<Long, List<Command.Choice>> previousResults; // Using previous options if they are less than 1000 ms old
     public static final int COOLDOWN = 1000; // only giving options every 1000 ms
 
     public AutoCompleteListener(FluxBot bot) {
         this.bot = bot;
         rules = new HashSet<>();
         cooldowns = new HashMap<>();
+        previousResults = new HashMap<>();
     }
 
     public void initRules() {
@@ -36,7 +39,10 @@ public class AutoCompleteListener extends ListenerAdapter {
     public void onCommandAutoCompleteInteraction(@NotNull CommandAutoCompleteInteractionEvent event) {
         long userId = event.getUser().getIdLong();
         long time = event.getTimeCreated().toInstant().toEpochMilli();
-        if (isOnCooldown(userId, time)) return;
+        if (isOnCooldown(userId, time)) {
+            List<Command.Choice> cached = getCached(userId);
+            event.replyChoices(cached).queue();
+        }
         addCooldown(userId, time);
 
         EventContext context = new EventContext(event, bot);
@@ -44,7 +50,7 @@ public class AutoCompleteListener extends ListenerAdapter {
         String optionName = context.getOptionName();
         for (AutoCompleteRule rule : rules) {
             if (rule.match(commandName, optionName)) {
-                rule.select(context);
+                addToCache(userId, rule.select(context));
                 return;
             }
         }
@@ -59,7 +65,11 @@ public class AutoCompleteListener extends ListenerAdapter {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                cooldowns.remove(userId, time + COOLDOWN);
+                // Trying to remove user from cooldowns with old cooldown, if successful, also clear previous result from cache
+                if (cooldowns.remove(userId, time + COOLDOWN)) {
+                    previousResults.remove(userId);
+                }
+
             }
         }, COOLDOWN);
     }
@@ -68,5 +78,13 @@ public class AutoCompleteListener extends ListenerAdapter {
         Long cooldownEnds = cooldowns.get(userId);
         if (cooldownEnds == null) return false;
         return cooldownEnds > time;
+    }
+
+    public void addToCache(long userId, List<Command.Choice> result) {
+        previousResults.put(userId, result);
+    }
+
+    public List<Command.Choice> getCached(long userId) {
+        return previousResults.getOrDefault(userId, new ArrayList<>());
     }
 }

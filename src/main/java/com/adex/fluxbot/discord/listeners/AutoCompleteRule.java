@@ -27,8 +27,10 @@ public class AutoCompleteRule {
         return commandName.equals(command) && optionName.equals(option);
     }
 
-    public void select(EventContext context) {
-        context.getAutoCompleteEvent().replyChoices(selector.select(context)).queue();
+    public List<Command.Choice> select(EventContext context) {
+        List<Command.Choice> result = selector.select(context);
+        context.getAutoCompleteEvent().replyChoices(result).queue();
+        return result;
     }
 
     /**
