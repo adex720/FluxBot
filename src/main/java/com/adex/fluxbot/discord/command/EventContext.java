@@ -160,7 +160,7 @@ public class EventContext {
      * Sets the values for {@link this.game} and {@link this.inGame}.
      */
     private void findGame() {
-        FluxGame game = bot.gameManager.getGameByUserId(getUserId());
+        FluxGame game = bot.getGameManager().getGameByUserId(getUserId());
         if (game != null) {
             inGame = true;
             this.game = game;
