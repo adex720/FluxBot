@@ -22,6 +22,7 @@ public class FluxGame {
     public static final int CARDS_IN_STARTING_HAND = 3;
 
     private final Ruleset ruleset;
+    private final GameSettings settings;
 
     private final ArrayList<Player> players;
     private int playerCount;
@@ -53,6 +54,8 @@ public class FluxGame {
         this.channel = channel;
         this.channelId = channel.getIdLong();
         this.guildId = channel.getGuild().getIdLong();
+
+        this.settings = new GameSettings(0);
 
         this.ruleset = new Ruleset();
         cards = new Pile<>(Card.getCards());
