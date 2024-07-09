@@ -62,7 +62,7 @@ public class CommandPlay extends Command {
 
         card.onPlay(game, context);
         player.removeCardFromHand(card);
-        game.cardPlayed();
+        game.cardPlayed(context);
     }
 
     @Override

@@ -55,7 +55,7 @@ public class CommandDiscard extends Command {
         long userId = context.getUserId();
         // can current player discard
         if (game.getTurnState() == FluxGame.TurnState.WAITING_FOR_CARD_DISCARDING_CURRENT && game.currentPlayerUserId() == userId) {
-            game.discardCard(card, player, event);
+            game.discardCard(card, player, context);
 
             // can other players discard
         } else if (game.getTurnState() == FluxGame.TurnState.WAITING_FOR_CARD_DISCARDING_OTHERS && game.currentPlayerUserId() != userId) {
@@ -65,7 +65,7 @@ public class CommandDiscard extends Command {
                         .setEphemeral(true).queue();
                 return;
             }
-            game.discardCard(card, player, event);
+            game.discardCard(card, player, context);
         }
     }
 

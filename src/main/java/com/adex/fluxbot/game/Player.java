@@ -101,6 +101,10 @@ public class Player {
         hand.remove(card);
     }
 
+    public void removeKeeper(Keeper keeper) {
+        keepers.remove(keeper);
+    }
+
     /**
      * Returns an {@link ArrayList<Keeper>} of the player's played keepers.
      */
