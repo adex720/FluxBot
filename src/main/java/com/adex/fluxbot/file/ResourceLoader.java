@@ -70,8 +70,4 @@ public class ResourceLoader {
     public JsonArray getResourceJsonArray(String name) throws FileNotFoundException {
         return JsonParser.parseReader(new FileReader(getResourceFile(name))).getAsJsonArray();
     }
-
-    public JsonObject getConfigJson() throws FileNotFoundException {
-        return JsonParser.parseReader(new FileReader("config.json")).getAsJsonObject();
-    }
 }

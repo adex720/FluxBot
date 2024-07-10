@@ -35,6 +35,10 @@ public class CommandListener extends ListenerAdapter {
      * Initializes commands and adds them to the commands setRule.
      */
     public void initCommands() {
+        addCommand(Commands.COMMAND_GITHUB);
+        addCommand(Commands.COMMAND_INVITE_LINK);
+        addCommand(Commands.COMMAND_SERVER);
+
         addCommand(Commands.COMMAND_RULES);
 
         addCommand(Commands.COMMAND_CREATE);
