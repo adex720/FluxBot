@@ -83,4 +83,8 @@ public class Cards {
     public static final Card GOAL_FIVE_KEEPERS = new GoalCard(Goals.FIVE_KEEPERS);
     public static final Card GOAL_TEN_CARDS_IN_HAND = new GoalCard(Goals.TEN_CARDS_IN_HAND);
 
+    public static int getCardAmount() {
+        return Card.getCardAmount();
+    }
+
 }

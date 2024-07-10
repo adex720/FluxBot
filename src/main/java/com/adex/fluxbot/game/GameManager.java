@@ -37,7 +37,7 @@ public class GameManager {
 
     public FluxGame createGame(long userId, String hostUsername, TextChannel channel) {
         int gameId = nextId++;
-        FluxGame game = new FluxGame(userId,hostUsername, gameId, channel);
+        FluxGame game = new FluxGame(userId, hostUsername, gameId, channel);
         activeGames.put(gameId, game);
         playerGameIds.put(userId, gameId);
         return game;

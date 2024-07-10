@@ -42,7 +42,9 @@ public class Player {
 
         keepers = new ArrayList<>();
 
-        int cardCount = Math.min(FluxGame.CARDS_IN_STARTING_HAND, game.getRule(Rule.HAND_LIMIT));
+        int cardCount = FluxGame.CARDS_IN_STARTING_HAND;
+        int handLimit = game.getRule(Rule.HAND_LIMIT);
+        if (handLimit >= 0 && cardCount < handLimit) cardCount = handLimit;
         hand = new ArrayList<>();
 
         Card[] cards = game.cards.draw(new Card[cardCount], cardCount);

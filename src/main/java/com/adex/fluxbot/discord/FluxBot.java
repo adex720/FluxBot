@@ -3,6 +3,7 @@ package com.adex.fluxbot.discord;
 import com.adex.fluxbot.discord.listeners.AutoCompleteListener;
 import com.adex.fluxbot.discord.listeners.CommandListener;
 import com.adex.fluxbot.game.GameManager;
+import com.adex.fluxbot.game.card.Cards;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -54,6 +55,8 @@ public class FluxBot {
         jda.setAutoReconnect(true);
 
         commandListener.registerCommands(jda);
+
+        logger.info("Loaded {} cards", Cards.getCardAmount());
     }
 
     public JDA getJda() {

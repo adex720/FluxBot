@@ -114,7 +114,7 @@ public class EventContext {
     }
 
     public String getUserAsMention() {
-        return "<@" + getUserId() + "";
+        return "<@" + getUserId() + ">";
     }
 
     public long getUserId() {
@@ -222,6 +222,24 @@ public class EventContext {
     public Button getButton() {
         if (!fromButton) return null;
         return buttonEvent.getButton();
+    }
+
+    /**
+     * Returns the id of the button pressed.
+     * Returns null if this is from different event.
+     */
+    public String getButtonId() {
+        if (!fromButton) return null;
+        return buttonEvent.getComponentId();
+    }
+
+    /**
+     * Returns the id of the button pressed split into an array on each dash.
+     * Returns null if this is from different event.
+     */
+    public String[] getButtonIdSplit() {
+        if (!fromButton) return null;
+        return buttonEvent.getComponentId().split("-");
     }
 
     /**

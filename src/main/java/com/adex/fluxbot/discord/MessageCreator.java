@@ -66,7 +66,9 @@ public class MessageCreator {
     }
 
     public static MessageEmbed createErrorMessage(Exception e) {
-        return createDefault("Exception", ERROR_COLOR, e.getMessage(), Arrays.toString(e.getStackTrace()));
+        String stackTrace = Arrays.toString(e.getStackTrace());
+        if (stackTrace.length() > 1024) stackTrace = stackTrace.substring(0, 1020) + "...";
+        return createDefault("Exception", ERROR_COLOR, e.getMessage(), stackTrace);
     }
 
 
