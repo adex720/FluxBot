@@ -35,6 +35,8 @@ public class CommandListener extends ListenerAdapter {
      * Initializes commands and adds them to the commands setRule.
      */
     public void initCommands() {
+        addCommand(Commands.COMMAND_RULES);
+
         addCommand(Commands.COMMAND_CREATE);
         addCommand(Commands.COMMAND_JOIN);
         addCommand(Commands.COMMAND_LEAVE);
@@ -51,6 +53,7 @@ public class CommandListener extends ListenerAdapter {
      */
     private void addCommand(Command command) {
         command.setId(commands.size());
+        command.onInit(bot);
         commands.add(command);
     }
 
@@ -89,6 +92,8 @@ public class CommandListener extends ListenerAdapter {
                 try {
                     command.execute(context);
                 } catch (Exception e) {
+                    context.getBot().getLogger().error("Error when executing command {}: {}\n{}",
+                            commandName, e.getMessage(), Arrays.toString(e.getStackTrace()));
                     event.replyEmbeds(MessageCreator.createErrorMessage(e)).queue();
                 }
                 break;
@@ -96,6 +101,12 @@ public class CommandListener extends ListenerAdapter {
         }
     }
 
+    /**
+     * Adds the user to the cooldown map
+     *
+     * @param userId Discord user id of the user
+     * @param time   Epoch milliseconds when the interaction was created
+     */
     public void addCooldown(long userId, long time) {
         cooldowns.put(userId, time + COOLDOWN);
 
@@ -107,6 +118,12 @@ public class CommandListener extends ListenerAdapter {
         }, COOLDOWN);
     }
 
+    /**
+     * Checks if the user is in cooldown
+     *
+     * @param userId Discord user id of the user
+     * @param time   Epoch milliseconds when the interaction was created
+     */
     public boolean isOnCooldown(long userId, long time) {
         Long cooldownEnds = cooldowns.get(userId);
         if (cooldownEnds == null) return false;

@@ -1,8 +1,11 @@
 package com.adex.fluxbot.discord.command;
 
 import com.adex.fluxbot.discord.command.game.*;
+import com.adex.fluxbot.discord.command.info.CommandRules;
 
 public class Commands {
+
+    public static final Command COMMAND_RULES = new CommandRules();
 
     public static final Command COMMAND_CREATE = new CommandCreate();
     public static final Command COMMAND_JOIN = new CommandJoin();

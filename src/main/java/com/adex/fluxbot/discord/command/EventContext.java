@@ -34,6 +34,8 @@ public class EventContext {
     private Boolean inGame;
     private FluxGame game;
 
+    private String[] buttonIdSplit;
+
     public EventContext(SlashCommandInteractionEvent event, FluxBot bot) {
         this.bot = bot;
         fromCommand = true;
@@ -48,6 +50,8 @@ public class EventContext {
 
         inGame = null;
         game = null;
+
+        buttonIdSplit = null;
     }
 
     public EventContext(ButtonInteractionEvent event, FluxBot bot) {
@@ -64,6 +68,8 @@ public class EventContext {
 
         inGame = null;
         game = null;
+
+        buttonIdSplit = null;
     }
 
     public EventContext(CommandAutoCompleteInteractionEvent event, FluxBot bot) {
@@ -80,6 +86,8 @@ public class EventContext {
 
         inGame = null;
         game = null;
+
+        buttonIdSplit = null;
     }
 
     public boolean isFromCommand() {
@@ -239,7 +247,8 @@ public class EventContext {
      */
     public String[] getButtonIdSplit() {
         if (!fromButton) return null;
-        return buttonEvent.getComponentId().split("-");
+        if (buttonIdSplit == null) buttonIdSplit = buttonEvent.getComponentId().split("-");
+        return buttonIdSplit;
     }
 
     /**

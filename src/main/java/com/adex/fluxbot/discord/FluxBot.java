@@ -1,6 +1,7 @@
 package com.adex.fluxbot.discord;
 
 import com.adex.fluxbot.discord.listeners.AutoCompleteListener;
+import com.adex.fluxbot.discord.listeners.ButtonListener;
 import com.adex.fluxbot.discord.listeners.CommandListener;
 import com.adex.fluxbot.game.GameManager;
 import com.adex.fluxbot.game.card.Cards;
@@ -24,6 +25,7 @@ public class FluxBot {
 
     private final CommandListener commandListener;
     private final AutoCompleteListener autoCompleteListener;
+    private final ButtonListener buttonListener;
 
     private final Random random;
 
@@ -37,15 +39,16 @@ public class FluxBot {
         gameManager = new GameManager(0);
 
         commandListener = new CommandListener(this);
-        commandListener.initCommands();
-
         autoCompleteListener = new AutoCompleteListener(this);
+        buttonListener = new ButtonListener(this); // Has to be defined before registering commands
+
+        commandListener.initCommands();
         autoCompleteListener.initRules();
 
         jda = JDABuilder.createDefault(token)
                 .setStatus(OnlineStatus.ONLINE)
                 .setActivity(Activity.playing("FluxGame"))
-                .addEventListeners(commandListener, autoCompleteListener)
+                .addEventListeners(commandListener, autoCompleteListener, buttonListener)
                 .build()
                 .awaitReady();
 
@@ -69,6 +72,10 @@ public class FluxBot {
 
     public AutoCompleteListener getAutoCompleteListener() {
         return autoCompleteListener;
+    }
+
+    public ButtonListener getButtonListener() {
+        return buttonListener;
     }
 
     public GameManager getGameManager() {
