@@ -1,5 +1,6 @@
 package com.adex.fluxbot.game;
 
+import com.adex.fluxbot.discord.FluxBot;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,9 +36,9 @@ public class GameManager {
         return activeGames.get(playerGameIds.get(userId));
     }
 
-    public FluxGame createGame(long userId, String hostUsername, TextChannel channel) {
+    public FluxGame createGame(FluxBot bot, long userId, String hostUsername, TextChannel channel) {
         int gameId = nextId++;
-        FluxGame game = new FluxGame(userId, hostUsername, gameId, channel);
+        FluxGame game = new FluxGame(bot, userId, hostUsername, gameId, channel);
         activeGames.put(gameId, game);
         playerGameIds.put(userId, gameId);
         return game;

@@ -1,6 +1,7 @@
 package com.adex.fluxbot.game;
 
 import com.adex.fluxbot.Util;
+import com.adex.fluxbot.discord.FluxBot;
 import com.adex.fluxbot.discord.MessageCreator;
 import com.adex.fluxbot.discord.command.EventContext;
 import com.adex.fluxbot.game.card.Card;
@@ -24,6 +25,8 @@ import java.util.Set;
 public class FluxGame {
 
     public static final int CARDS_IN_STARTING_HAND = 3;
+
+    private final FluxBot bot;
 
     private final Ruleset ruleset;
     private final GameSettings settings;
@@ -59,7 +62,8 @@ public class FluxGame {
     private final long channelId;
     private final long guildId;
 
-    public FluxGame(long userId, String hostUsername, int gameId, TextChannel channel) {
+    public FluxGame(FluxBot bot, long userId, String hostUsername, int gameId, TextChannel channel) {
+        this.bot = bot;
         this.gameId = gameId;
         this.channel = channel;
         this.channelId = channel.getIdLong();
@@ -279,6 +283,30 @@ public class FluxGame {
         }
 
         if (player == null) return; // User is not in the game
+
+        if (turnState == TurnState.NOT_STARTED) {
+
+            // Leaving player is the only player
+            if (playerCount == 1) {
+                channel.sendMessageEmbeds(MessageCreator.createDefault("You were the only player in the game so the game has been deleted.")).queue();
+                delete();
+                return;
+            }
+
+            // Removing player and sending message
+            players.remove(0);
+            playerCount--;
+            channel.sendMessageEmbeds(MessageCreator.createDefault("Flux game", "A player has left te game", "<@" + userId + "> has left the game")).queue();
+
+            // Leaving player was the host
+            if (playerIndex == 0) {
+                channel.sendMessageEmbeds(MessageCreator.createDefault("Flux game", "The host has left the game", players.get(0).getAsMention() + " is the new host")).queue();
+                return;
+                // Host is the first player in the players list so removing the old player already made someone the new host
+            }
+
+            return;
+        }
 
         if (playerCount == 2) {
             handleForfeit(playerIndex == 1 ? 0 : 1);
@@ -777,11 +805,18 @@ public class FluxGame {
     }
 
     public void handleWin(int winnerId) {
-
+        delete();
     }
 
     public void handleForfeit(int winnerId) {
+        delete();
+    }
 
+    /**
+     * Removes the game from the {@link GameManager}
+     */
+    public void delete() {
+        bot.getGameManager().removeGame(this);
     }
 
     public enum TurnState {
