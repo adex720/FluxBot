@@ -14,7 +14,7 @@ public class MessageCreator {
     public static final int ERROR_COLOR = 0x8c0101;
 
     public static final String COMMAND_TIPS = """
-            Use /cards to view your cards
+            Use /hand to view your cards
             Use /keepers to view your keepers
             Use /table to view everyone's keepers and hand size
             Use /play to play a card

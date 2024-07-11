@@ -18,6 +18,9 @@ public class Commands {
     public static final Command COMMAND_START = new CommandStart();
     public static final Command COMMAND_INVITE = new CommandInvite();
 
+    public static final Command COMMAND_HAND = new CommandHand();
+    public static final Command COMMAND_KEEPERS = new CommandKeepers();
+    public static final Command COMMAND_TABLE = new CommandTable();
     public static final Command COMMAND_PLAY = new CommandPlay();
     public static final Command COMMAND_DISCARD = new CommandDiscard();
     public static final Command COMMAND_REMOVE = new CommandRemove();
