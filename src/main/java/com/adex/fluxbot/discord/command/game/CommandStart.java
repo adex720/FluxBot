@@ -23,7 +23,7 @@ public class CommandStart extends Command {
 
         long userId = context.getUserId();
         FluxGame game = context.getGame();
-        if (game.getTurnState() != FluxGame.TurnState.NOT_STARTED) {
+        if (game.hasStarted()) {
             event.replyEmbeds(MessageCreator.createDefault("Cannot start game", "Your game is already playing",
                     MessageCreator.COMMAND_TIPS)).setEphemeral(true).queue();
             return;

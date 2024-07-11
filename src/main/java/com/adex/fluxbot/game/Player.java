@@ -1,5 +1,6 @@
 package com.adex.fluxbot.game;
 
+import com.adex.fluxbot.Util;
 import com.adex.fluxbot.game.card.Card;
 import com.adex.fluxbot.game.card.Pile;
 import com.adex.fluxbot.game.keeper.Keeper;
@@ -60,6 +61,21 @@ public class Player {
      */
     public ArrayList<Card> getHand() {
         return hand;
+    }
+
+    /**
+     * Returns a String containing the hand.
+     * Each card is on its own line and contains a dash, the card emote and the card name.
+     */
+    public String getHandFormatted() {
+        if (hand.isEmpty()) return "You don't have any cards in your hand";
+
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Card card : hand) {
+            if (!stringBuilder.isEmpty()) stringBuilder.append('\n');
+            stringBuilder.append("- ").append(card.getEmoteAndName());
+        }
+        return stringBuilder.toString();
     }
 
     public int getHandSize() {
@@ -127,10 +143,70 @@ public class Player {
     }
 
     /**
+     * Returns a String containing the keepers in front of the player.
+     * Each keeper is on its own line and contains a dash, the card emote and the card name.
+     * Shows hidden keepers.
+     * Should be used when showing own keepers
+     */
+    public String getKeepersFormatted() {
+        if (keepers.isEmpty()) return "You don't have any cards in your hand";
+
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Keeper keeper : keepers) {
+            if (!stringBuilder.isEmpty()) stringBuilder.append('\n');
+            stringBuilder.append("- ").append(keeper.getEmoteAndName());
+        }
+        return stringBuilder.toString();
+    }
+
+    /**
+     * Returns a String containing the keepers in front of the player.
+     * Each keeper is on its own line and contains a dash, the card emote and the card name.
+     * Hides hidden keepers, only showing amount of hidden keepers
+     * Should be used when showing keepers of another player
+     */
+    public String getKeepersFormattedForOthers() {
+        if (keepers.isEmpty()) return "<@" + userId + "> doesn't have any keepers";
+
+        int hidden = game.getRule(Rule.KEEPERS_SECRET);
+        if (hidden == -1) {
+            return Util.combineCountAndWord(keepers.size(), "hidden keeper");
+        }
+
+        if (hidden == 0) {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (Keeper keeper : keepers) {
+                if (!stringBuilder.isEmpty()) stringBuilder.append('\n');
+                stringBuilder.append("- ").append(keeper.getEmoteAndName());
+            }
+            return stringBuilder.toString();
+        }
+
+        int keeperCount = keepers.size();
+        if (keeperCount == 1) return "1 hidden keeper";
+
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < keeperCount; i++) {
+            if (i == hiddenKeeperIndex) continue;
+            if (!stringBuilder.isEmpty()) stringBuilder.append('\n');
+            stringBuilder.append("- ").append(keepers.get(i).getEmoteAndName());
+        }
+        return stringBuilder.append("\n+ 1 hidden keeper").toString();
+    }
+
+    /**
      * Returns the amount of keepers the player has in from of them.
      */
     public int getKeeperCount() {
         return keepers.size();
+    }
+
+    public void hideKeeper(int index) {
+        hiddenKeeperIndex = index;
+    }
+
+    public void revealKeepers() {
+        hiddenKeeperIndex = -1;
     }
 
     public int getHiddenKeeperIndex() {

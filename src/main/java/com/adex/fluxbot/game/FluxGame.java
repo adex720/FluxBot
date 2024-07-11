@@ -471,6 +471,10 @@ public class FluxGame {
         return turnState == TurnState.WAITING_CARD_TO_PLAY && cardPlaying == null;
     }
 
+    public boolean hasStarted() {
+        return turnState != TurnState.NOT_STARTED;
+    }
+
     public void startGame(EventContext context) {
         currentPlayerId = 0;
         nextPlayerId = 1;
