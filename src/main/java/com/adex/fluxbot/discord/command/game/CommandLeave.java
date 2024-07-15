@@ -35,7 +35,7 @@ public class CommandLeave extends Command {
 
         FluxGame game = context.getGame();
         long userId = context.getUserId();
-        if (game.currentPlayerUserId() == userId) {
+        if (game.currentPlayerUserId() == userId && game.hasStarted()) {
             event.replyEmbeds(MessageCreator.createDefault("Cannot leave game", "It's your turn", "Finish your turn before leaving"))
                     .setEphemeral(true).queue();
             return;
