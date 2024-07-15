@@ -45,17 +45,14 @@ public class GameManager {
     }
 
     /**
-     * Adds a player to the game if they are not in a game yet.
+     * Adds the player id and the game id to the HashMap.
      *
-     * @param userId   Discord user id of the player
-     * @param userName Discord username of the player
-     * @param game     FluxGame game
+     * @param userId Discord user id of the player
+     * @param game   Game to add the user to
      */
-    public void addUserToGame(long userId, String userName, FluxGame game) {
+    public void addUserToGame(long userId, FluxGame game) {
         if (playerGameIds.containsKey(userId)) return;
-
         playerGameIds.put(userId, game.gameId);
-        game.addPlayer(userId, userName);
     }
 
     public void removePlayerFromGame(long userId, FluxGame game, boolean kicked) {

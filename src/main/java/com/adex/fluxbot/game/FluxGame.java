@@ -281,19 +281,20 @@ public class FluxGame {
     public void addPlayer(long userId, String username) {
         if (isUserInGame(userId)) return;
 
-        if (currentPlayerId == 0) {
-            players.add(new Player(userId, username, this));
-            sendJoinMessage(userId, username, playerCount, turnState != TurnState.NOT_STARTED);
-        } else {
-            players.add(currentPlayerId, new Player(userId, username, this));
-            sendJoinMessage(userId, username, currentPlayerId, turnState != TurnState.NOT_STARTED);
+        // Setting new player so that he's before the player whose turn it is
+        int playerId = currentPlayerId == 0 ? playerCount : currentPlayerId;
 
+        bot.getGameManager().addUserToGame(userId, this);
+        players.add(playerId, new Player(userId, username, this));
+        playerCount++;
+        invites.remove(userId);
+
+        if (currentPlayerId != 0) {
             currentPlayerId++;
             nextPlayerId++;
         }
 
-        invites.remove(userId);
-        playerCount++;
+        sendJoinMessage(userId, username, playerId, turnState != TurnState.NOT_STARTED);
     }
 
     /**
