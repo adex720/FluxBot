@@ -43,6 +43,7 @@ public class AutoCompleteListener extends ListenerAdapter {
         if (isOnCooldown(userId, time)) {
             List<Command.Choice> cached = getCached(userId);
             event.replyChoices(cached).queue();
+            return;
         }
         addCooldown(userId, time);
 
