@@ -9,7 +9,7 @@ public class KeeperCard extends Card {
     public final Keeper keeper;
 
     public KeeperCard(Keeper keeper) {
-        super(keeper.getEmoteAndName(), Type.KEEPER);
+        super(keeper.name, Type.KEEPER);
         this.keeper = keeper;
     }
 
@@ -17,5 +17,10 @@ public class KeeperCard extends Card {
     public void onPlay(FluxGame game, EventContext context) {
         game.currentPlayer().getKeepers().add(keeper);
         game.keepersChanged();
+    }
+
+    @Override
+    public String getEmote() {
+        return keeper.getEmote();
     }
 }

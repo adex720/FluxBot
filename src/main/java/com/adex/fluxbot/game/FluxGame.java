@@ -109,6 +109,24 @@ public class FluxGame {
     }
 
     /**
+     * Returns a string containing active rules.
+     * Each rule is shown on a different line.
+     * Uses {@link Rule#display(int)} to get display format
+     */
+    public String getRules() {
+        StringBuilder sb = new StringBuilder();
+
+        for (Rule rule : Rule.values()) {
+            String ruleString = rule.display(getRule(rule));
+            if (ruleString.isEmpty()) continue;
+            if (!sb.isEmpty()) sb.append('\n');
+            sb.append(ruleString);
+        }
+
+        return sb.toString();
+    }
+
+    /**
      * Sets the value of the rule into the given value.
      * Checks if the value is in the allowed range.
      *
@@ -192,6 +210,13 @@ public class FluxGame {
         return players.get(currentPlayerId);
     }
 
+    /**
+     * Returns the index of the player whose turn it is in the player list.
+     */
+    public int currentPlayerId() {
+        return currentPlayerId;
+    }
+
     public long getHostUserId() {
         return players.get(0).userId;
     }
@@ -219,6 +244,15 @@ public class FluxGame {
             if (player.userId == userId) return player;
         }
         return null;
+    }
+
+    /**
+     * Returns the player with the player id.
+     * The host is the player with id 0.
+     * The player whose turn if after the host has an id of 1, the next 2, and so on.
+     */
+    public Player getPlayerByPlayerId(int id) {
+        return players.get(id);
     }
 
     public ArrayList<Player> getPlayers() {
@@ -492,6 +526,7 @@ public class FluxGame {
     public void prepareNextTurn() {
         currentPlayerId = nextPlayerId;
         nextPlayerId++;
+        cardsPlayed = 0;
         if (nextPlayerId >= playerCount) nextPlayerId = 0;
     }
 
@@ -546,28 +581,28 @@ public class FluxGame {
     }
 
     /**
-     * Should be called after hand limit is met when checked from the current player.
-     * Proceeds to the next steps of ending a turn.
+     * Should be called after hand limit is met when checked from any players.
+     * Proceeds the game.
      */
     private void handLimitIsMet(EventContext context) {
-        if (turnState == TurnState.WAITING_FOR_CARD_DISCARDING_CURRENT) { // Current player is discarding
+        if (turnState == TurnState.WAITING_FOR_CARD_DISCARDING_OTHERS) { // Current player is discarding
+            prepareCardPlaying(context);
+        } else {
             if (checkKeeperLimit(currentPlayer())) return;
             keeperLimitIsMet(context);
-        } else {
-            prepareCardPlaying(context);
         }
     }
 
     /**
-     * Should be called after keeper limit is met when checked from the current player.
-     * Proceeds to the next steps of ending a turn.
+     * Should be called after keeper limit is met when checked from any players.
+     * Proceeds to the game.
      */
     private void keeperLimitIsMet(EventContext context) {
-        if (turnState == TurnState.WAITING_FOR_KEEPER_DISCARDING_CURRENT) { // Current player is removing
+        if (turnState == TurnState.WAITING_FOR_KEEPER_DISCARDING_OTHERS) { // Current player is removing
+            prepareCardPlaying(context);
+        } else {
             prepareNextTurn();
             startTurn(context);
-        } else {
-            prepareCardPlaying(context);
         }
     }
 

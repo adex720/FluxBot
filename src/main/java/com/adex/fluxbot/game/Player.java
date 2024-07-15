@@ -5,6 +5,7 @@ import com.adex.fluxbot.game.card.Card;
 import com.adex.fluxbot.game.card.Pile;
 import com.adex.fluxbot.game.keeper.Keeper;
 import com.adex.fluxbot.game.rule.Rule;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -224,5 +225,15 @@ public class Player {
      */
     public String getAsMention() {
         return "<@" + userId + ">";
+    }
+
+    /**
+     * Creates a {@link MessageEmbed.Field} with the user tag as title and contains amount of cards in the player's hand
+     * and the keepers.
+     * If the keepers are hidden, only shows the amount of them.
+     */
+    public MessageEmbed.Field getInfoField() {
+        return new MessageEmbed.Field(username,
+                Util.combineCountAndWord(getHandSize(), "card") + " in hand\n" + getHandFormatted(), true);
     }
 }
