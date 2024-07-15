@@ -56,7 +56,7 @@ public class CommandInvite extends Command {
 
     @Override
     public OptionData[] getOptionData() {
-        return new OptionData[]{new OptionData(OptionType.INTEGER, "user", "User to invite", true)};
+        return new OptionData[]{new OptionData(OptionType.USER, "user", "User to invite", true)};
     }
 }
 

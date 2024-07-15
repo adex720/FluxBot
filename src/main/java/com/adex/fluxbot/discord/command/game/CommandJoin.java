@@ -53,6 +53,6 @@ public class CommandJoin extends Command {
 
     @Override
     public OptionData[] getOptionData() {
-        return new OptionData[]{new OptionData(OptionType.INTEGER, "game", "Player in the game to join", true)};
+        return new OptionData[]{new OptionData(OptionType.USER, "game", "Player in the game to join", true)};
     }
 }
