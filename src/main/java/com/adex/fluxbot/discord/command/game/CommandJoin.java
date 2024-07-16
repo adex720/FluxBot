@@ -47,6 +47,13 @@ public class CommandJoin extends Command {
             return;
         }
 
+        if (event.getChannelIdLong() != game.getChannelId()) {
+            event.replyEmbeds(MessageCreator.createDefault("Cannot join game",
+                    "The game can only be joined in the channel it has been created in.",
+                    "This game was created in <#" + game.getChannelId() + ">.")).setEphemeral(true).queue();
+            return;
+        }
+
         game.addPlayer(userId, context.getUsername());
         event.replyEmbeds(MessageCreator.createDefault("Join game", "You joined the game", MessageCreator.COMMAND_TIPS)).queue();
     }

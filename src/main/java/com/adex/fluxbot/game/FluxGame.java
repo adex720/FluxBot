@@ -204,6 +204,13 @@ public class FluxGame {
     }
 
     /**
+     * Returns the id of the Discord channel the game is in.
+     */
+    public long getChannelId() {
+        return channelId;
+    }
+
+    /**
      * Returns the player whose turn it is.
      */
     public Player currentPlayer() {
