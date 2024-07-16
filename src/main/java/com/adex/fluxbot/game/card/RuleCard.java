@@ -3,6 +3,7 @@ package com.adex.fluxbot.game.card;
 import com.adex.fluxbot.discord.command.EventContext;
 import com.adex.fluxbot.game.FluxGame;
 import com.adex.fluxbot.game.rule.Rule;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 
 /**
  * A card which sets a rule to a specific value.
@@ -16,7 +17,7 @@ public class RuleCard extends Card {
     }
 
     public RuleCard(Rule rule, int value) {
-        super(rule.name + " " + value, Type.RULE);
+        super(rule.getName(value), Type.RULE);
         this.rule = rule;
         this.value = value;
     }
@@ -26,7 +27,12 @@ public class RuleCard extends Card {
 
     @Override
     public void onPlay(FluxGame game, EventContext context) {
-        boolean wait = game.setRule(rule, value);
-        //TODO: send message
+        game.setRule(rule, value);
+        context.getSlashCommandEvent().replyEmbeds(getPlayMessage(context.getUsername())).queue();
     }
+
+    public MessageEmbed getPlayMessage(String username) {
+        return getPlayMessage(username, rule.getNewValue(value));
+    }
+
 }

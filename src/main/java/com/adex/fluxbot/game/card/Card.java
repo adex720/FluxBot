@@ -1,7 +1,9 @@
 package com.adex.fluxbot.game.card;
 
+import com.adex.fluxbot.discord.MessageCreator;
 import com.adex.fluxbot.discord.command.EventContext;
 import com.adex.fluxbot.game.FluxGame;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.commands.Command;
 
 import java.util.ArrayList;
@@ -69,5 +71,15 @@ public abstract class Card {
 
     public Command.Choice getAsChoice() {
         return new Command.Choice(name, id);
+    }
+
+    /**
+     * Returns a {@link MessageEmbed} telling the card was played.
+     *
+     * @param username    Discord username of the player who played the card.
+     * @param description Description of what happens when the card is played.
+     */
+    public MessageEmbed getPlayMessage(String username, String description) {
+        return MessageCreator.createDefault("Card played", type, username + " played " + name, description);
     }
 }
