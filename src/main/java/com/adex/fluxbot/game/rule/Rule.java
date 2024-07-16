@@ -110,7 +110,7 @@ public enum Rule {
     }
 
     enum DisplayStyle {
-        ALWAYS, WHEN_NOT_DEFAULT, ONLY_NAME_AND_WHEN_NOT_DEFAULT, CUSTOM;
+        ALWAYS, WHEN_NOT_DEFAULT, ONLY_NAME_AND_WHEN_NOT_DEFAULT, CUSTOM
     }
 
 }
