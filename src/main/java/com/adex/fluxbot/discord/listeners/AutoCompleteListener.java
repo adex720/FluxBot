@@ -29,7 +29,9 @@ public class AutoCompleteListener extends ListenerAdapter {
     public void initRules() {
         addRule(new AutoCompleteRule(Commands.COMMAND_PLAY.getName(), "card", AutoCompleteRule.CHOOSE_CARD_FROM_HAND));
         addRule(new AutoCompleteRule(Commands.COMMAND_DISCARD.getName(), "card", AutoCompleteRule.CHOOSE_CARD_FROM_HAND));
+
         addRule(new AutoCompleteRule(Commands.COMMAND_REMOVE.getName(), "keeper", AutoCompleteRule.CHOOSE_KEEPER_FROM_FRONT));
+        addRule(new AutoCompleteRule(Commands.COMMAND_HIDE.getName(), "keeper", AutoCompleteRule.CHOOSE_KEEPER_FROM_FRONT));
     }
 
     public void addRule(AutoCompleteRule rule) {

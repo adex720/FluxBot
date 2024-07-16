@@ -1,6 +1,7 @@
 package com.adex.fluxbot.discord.command;
 
 import com.adex.fluxbot.discord.FluxBot;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
@@ -44,5 +45,17 @@ public abstract class Command {
 
     public String getName() {
         return name;
+    }
+
+    public void reply(EventContext context, MessageEmbed embed) {
+        reply(context, embed, false);
+    }
+
+    public void reply(EventContext context, MessageEmbed embed, boolean ephemeral) {
+        if (context.isFromCommand()) {
+            context.getSlashCommandEvent().replyEmbeds(embed).setEphemeral(ephemeral).queue();
+        } else if (context.isFromButton()) {
+            context.getButtonEvent().replyEmbeds(embed).setEphemeral(ephemeral).queue();
+        }
     }
 }

@@ -24,5 +24,6 @@ public class Commands {
     public static final Command COMMAND_PLAY = new CommandPlay();
     public static final Command COMMAND_DISCARD = new CommandDiscard();
     public static final Command COMMAND_REMOVE = new CommandRemove();
+    public static final Command COMMAND_HIDE = new CommandHide();
 
 }

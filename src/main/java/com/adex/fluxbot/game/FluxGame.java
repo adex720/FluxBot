@@ -446,6 +446,11 @@ public class FluxGame {
     public void keepersChanged() {
         int winnerId = checkForWin();
         if (winnerId >= 0) handleWin(winnerId);
+        checkBonus();
+    }
+
+    public void checkBonus() {
+        //TODO
     }
 
     /**
@@ -498,11 +503,18 @@ public class FluxGame {
     }
 
     /**
-     * @return true if at least one player needs to select which card to hide.
+     * @return true if at least one player needs to select which keeper to hide.
      */
     public boolean keepersSecretChanged() {
-        //TODO
-        return false;
+        checkBonus();
+
+        int hiddenKeepers = getRule(Rule.KEEPERS_SECRET);
+        boolean wait = false;
+        for (Player player : players) {
+            if (player.hiddenKeepersChanged(hiddenKeepers)) wait = true;
+        }
+
+        return wait;
     }
 
     public TurnState getTurnState() {

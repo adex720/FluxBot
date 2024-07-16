@@ -94,6 +94,14 @@ public class EventContext {
         return fromCommand;
     }
 
+    public boolean isFromButton() {
+        return fromButton;
+    }
+
+    public boolean isFromAutoComplete() {
+        return fromAutoComplete;
+    }
+
     public Event getEvent() {
         if (fromCommand) return slashCommandEvent;
         if (fromButton) return buttonEvent;

@@ -202,11 +202,41 @@ public class Player {
         return keepers.size();
     }
 
+    /**
+     * Hides a keeper.
+     * Uses the index of keeper at the {@link ArrayList} of keepers in front of the player, not the id of the keeper!
+     *
+     * @param index Index of the keeper at the  {@link ArrayList} of keepers in front of the player.
+     * @throws IllegalStateException If index is larger or equal to the amount of keepers in front of the player.
+     */
     public void hideKeeper(int index) {
+        if (index >= keepers.size())
+            throw new IllegalArgumentException("Cannot hide keeper with index " + index + ": player doesn't have that many keepers");
         hiddenKeeperIndex = index;
     }
 
+    /**
+     * Hides a keeper.
+     *
+     * @param keeper Keeper to hide.
+     */
+    public void hideKeeper(Keeper keeper) {
+        int keeperIndex = 0;
+
+        for (Keeper checking : keepers) {
+            if (checking.id == keeper.id) {
+                hiddenKeeperIndex = keeperIndex;
+                return;
+            }
+            keeperIndex++;
+        }
+    }
+
     public void revealKeepers() {
+        hiddenKeeperIndex = -1;
+    }
+
+    public void hideKeepers() {
         hiddenKeeperIndex = -1;
     }
 
@@ -231,7 +261,7 @@ public class Player {
      * @param keeper The keeper to check.
      */
     public boolean isKeeperHidden(Keeper keeper) {
-        int keeperIndex = -1;
+        int keeperIndex = 0;
         for (Keeper checking : keepers) {
             if (checking == keeper) {
                 return isKeeperHidden(keeperIndex);
@@ -240,6 +270,31 @@ public class Player {
         }
 
         return false; // Player doesn't have the keeper
+    }
+
+    public boolean hiddenKeepersChanged(int value) {
+        if (value == 0) {
+            revealKeepers();
+            return false;
+        }
+        if (value == -1) {
+            hideKeepers();
+            return false;
+        }
+
+        return !keepers.isEmpty();
+    }
+
+    public boolean hasKeeper(Keeper keeper) {
+        return keepers.contains(keeper);
+    }
+
+    public boolean hasKeeper(int keeperId) {
+        for (Keeper keeper : keepers) {
+            if (keeper.id == keeperId) return true;
+        }
+
+        return false;
     }
 
     public FluxGame getGame() {

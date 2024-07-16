@@ -53,6 +53,7 @@ public class CommandListener extends ListenerAdapter {
         addCommand(Commands.COMMAND_PLAY);
         addCommand(Commands.COMMAND_DISCARD);
         addCommand(Commands.COMMAND_REMOVE);
+        addCommand(Commands.COMMAND_HIDE);
     }
 
     /**
