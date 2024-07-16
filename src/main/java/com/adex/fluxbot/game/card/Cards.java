@@ -29,8 +29,8 @@ public class Cards {
     public static final Card RULE_KEEPER_LIMIT_FOUR = new RuleCard(Rule.KEEPER_LIMIT, 4);
     public static final Card RULE_KEEPER_LIMIT_FIVE = new RuleCard(Rule.KEEPER_LIMIT, 5);
 
-    public static final Card RULE_ONE_HIDDEN_KEEPER = new RuleCard(Rule.KEEPERS_SECRET, 1);
-    public static final Card RULE_ALL_KEEPERS_HIDDEN = new RuleCard(Rule.KEEPERS_SECRET, -1);
+    public static final Card RULE_ONE_HIDDEN_KEEPER = new RuleCard("Secret Data", Rule.KEEPERS_SECRET, 1);
+    public static final Card RULE_ALL_KEEPERS_HIDDEN = new RuleCard("Government Cover-Up", Rule.KEEPERS_SECRET, -1);
 
     public static final Card RULE_FINAL_CARD_RANDOM = new RuleCard(Rule.FINAL_CARD_RANDOM, 1);
 
