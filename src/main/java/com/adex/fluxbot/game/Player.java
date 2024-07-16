@@ -214,6 +214,34 @@ public class Player {
         return hiddenKeeperIndex;
     }
 
+    /**
+     * Returns true if the player's keeper at the index is hidden.
+     *
+     * @param keeperIndex Index of the keeper.
+     */
+    public boolean isKeeperHidden(int keeperIndex) {
+        int hiddenKeepers = game.getRule(Rule.KEEPERS_SECRET);
+        if (hiddenKeepers == 1) return keeperIndex == hiddenKeeperIndex;
+        return hiddenKeepers == -1;
+    }
+
+    /**
+     * Returns true if the player has the keeper, and it is hidden.
+     *
+     * @param keeper The keeper to check.
+     */
+    public boolean isKeeperHidden(Keeper keeper) {
+        int keeperIndex = -1;
+        for (Keeper checking : keepers) {
+            if (checking == keeper) {
+                return isKeeperHidden(keeperIndex);
+            }
+            keeperIndex++;
+        }
+
+        return false; // Player doesn't have the keeper
+    }
+
     public FluxGame getGame() {
         return game;
     }
