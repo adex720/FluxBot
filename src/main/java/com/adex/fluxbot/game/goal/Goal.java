@@ -20,7 +20,8 @@ public abstract class Goal {
     public abstract boolean check(Player player);
 
     /**
-     * Should be in a format which can be used in "Player wins if they have DESCRIPTION".
+     * Should be in a format which makes sense when used in "to have DESCRIPTION".
+     * Is used in for example: "Player wins if they have DESCRIPTION".
      */
     public abstract String getDescription();
 }
