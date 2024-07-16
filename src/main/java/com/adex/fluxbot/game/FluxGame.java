@@ -614,20 +614,6 @@ public class FluxGame {
         }
     }
 
-    private void handLimitIsMetForOthers(EventContext context) {
-        Player player = currentPlayer();
-        if (cardsPlayed >= getRule(Rule.PLAY_COUNT) || player.getHandSize() == 0) {
-            endTurn(context);
-            return;
-        }
-
-        turnState = TurnState.WAITING_CARD_TO_PLAY;
-    }
-
-    private void keeperLimitIsMetForOthers() {
-
-    }
-
     /**
      * Checks if the player needs to discard cards due to hand limit.
      * Should be called at the end of the player's turn.
@@ -763,7 +749,7 @@ public class FluxGame {
             }
 
             if (!extraCards) {
-                handLimitIsMetForOthers(context);
+                handLimitIsMet(context);
             }
         }
     }
