@@ -144,6 +144,8 @@ public class FluxGame {
             if (keeperLimitChanged()) waitForUser = true;
         } else if (rule == Rule.KEEPERS_SECRET) {
             if (keepersSecretChanged()) waitForUser = true;
+        } else if (rule == Rule.BONUS) {
+            checkBonus();
         }
 
         return waitForUser;
@@ -167,6 +169,8 @@ public class FluxGame {
             if (keeperLimitChanged()) waitForUser = true;
         } else if (ruleId == Rule.KEEPERS_SECRET.id) {
             if (keepersSecretChanged()) waitForUser = true;
+        } else if (ruleId == Rule.BONUS.id) {
+            checkBonus();
         }
 
         return waitForUser;
@@ -556,7 +560,7 @@ public class FluxGame {
      */
     public void startTurn(EventContext context) {
         Player player = currentPlayer();
-        int drawCount = ruleset.get(Rule.DRAW_COUNT);
+        int drawCount = getRule(Rule.DRAW_COUNT);
         cardsDrawn = player.addCardsToHand(cards, drawCount);
 
         if (player.getHandSize() == 0) {
@@ -634,7 +638,7 @@ public class FluxGame {
      * @return true if cards need to be discarded, false if not.
      */
     public boolean checkHandLimit(Player player) {
-        int handLimit = ruleset.get(Rule.HAND_LIMIT);
+        int handLimit = getRule(Rule.HAND_LIMIT);
         if (handLimit < 0 || player.getHandSize() <= handLimit) return false; // No need to discard
         int discardCount = player.getHandSize() - handLimit;
 
@@ -654,7 +658,7 @@ public class FluxGame {
      * @return true if at least one player needs to discard hands, false if not.
      */
     public boolean checkHandLimitFromOthers(@Nullable Player current) {
-        int handLimit = ruleset.get(Rule.HAND_LIMIT);
+        int handLimit = getRule(Rule.HAND_LIMIT);
         if (handLimit == -1) return false;
 
         StringBuilder tooMany = new StringBuilder();
@@ -668,7 +672,7 @@ public class FluxGame {
         }
 
         if (tooMany.isEmpty()) return false;
-        channel.sendMessageEmbeds(MessageCreator.createDefault("Hand limit is " + ruleset.get(Rule.HAND_LIMIT),
+        channel.sendMessageEmbeds(MessageCreator.createDefault("Hand limit is " + getRule(Rule.HAND_LIMIT),
                 "Use /discard to discard cards from your hand",
                 tooMany + " have too many cards")).queue();
 
@@ -683,7 +687,7 @@ public class FluxGame {
      * @return true if keepers need to be discarded, false if not.
      */
     public boolean checkKeeperLimit(Player player) {
-        int keeperLimit = ruleset.get(Rule.KEEPER_LIMIT);
+        int keeperLimit = getRule(Rule.KEEPER_LIMIT);
         if (keeperLimit < 0 || player.getKeeperCount() <= keeperLimit) return false; // No need to discard
         int discardCount = player.getKeeperCount() - keeperLimit;
 
@@ -704,7 +708,7 @@ public class FluxGame {
      * @return true if at least one player needs to discard keepers, false if not.
      */
     public boolean checkKeeperLimitFromOthers(@Nullable Player current) {
-        int keeperLimit = ruleset.get(Rule.KEEPER_LIMIT);
+        int keeperLimit = getRule(Rule.KEEPER_LIMIT);
         if (keeperLimit == -1) return false;
 
         StringBuilder tooMany = new StringBuilder();
@@ -718,7 +722,7 @@ public class FluxGame {
         }
 
         if (tooMany.isEmpty()) return false;
-        channel.sendMessageEmbeds(MessageCreator.createDefault("Keeper limit is " + ruleset.get(Rule.HAND_LIMIT),
+        channel.sendMessageEmbeds(MessageCreator.createDefault("Keeper limit is " + getRule(Rule.HAND_LIMIT),
                 "Use /remove to remove keepers from in front of you",
                 tooMany + " have too many keepers")).queue();
 

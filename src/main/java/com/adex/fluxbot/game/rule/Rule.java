@@ -10,7 +10,8 @@ public enum Rule {
     HAND_LIMIT("Hand Limit", 2, -1, 5, -1, DisplayStyle.WHEN_NOT_DEFAULT),
     KEEPER_LIMIT("Keeper Limit", 3, -1, 5, -1, DisplayStyle.WHEN_NOT_DEFAULT),
     KEEPERS_SECRET("Keepers hidden", 4, -1, 1, 0, DisplayStyle.WHEN_NOT_DEFAULT),
-    FINAL_CARD_RANDOM("Final card random", 5, 0, 0, 0, DisplayStyle.ONLY_NAME_AND_WHEN_NOT_DEFAULT);
+    FINAL_CARD_RANDOM("Final card random", 5, 0, 0, 0, DisplayStyle.ONLY_NAME_AND_WHEN_NOT_DEFAULT),
+    BONUS("Bonus", 6, 0, 4, 0, DisplayStyle.CUSTOM);
 
     Rule(String name, int id, int min, int max, int defaultValue, DisplayStyle displayStyle) {
         this.id = id;
@@ -67,6 +68,17 @@ public enum Rule {
             return name;
         }
 
+        if (this == BONUS) {
+            return switch (value) {
+                case 0 -> "No bonus";
+                case 1 -> "Time bonus";
+                case 2 -> "Tax bonus";
+                case 3 -> "Brain bonus";
+                case 4 -> "Money bonus";
+                default -> throw new IllegalStateException("Illegal value for rule Bonus, should be in range [0, 4], received: " + value);
+            };
+        }
+
         throw new IllegalStateException("Rule " + this.name + " has custom display but no display is defined for it");
     }
 
@@ -82,8 +94,11 @@ public enum Rule {
                 case -1 -> "All keepers hidden";
                 case 0 -> "No secret keepers";
                 case 1 -> "One secret keeper";
-                default -> throw new IllegalStateException("Unexpected value, should be in range [-1, 1]: " + value);
+                default -> throw new IllegalStateException("Unexpected hidden keeper value, should be in range [-1, 1]: " + value);
             };
+        }
+        if (this == BONUS) {
+            return Bonus.getById(value).name;
         }
 
         return name + " " + value;
@@ -105,12 +120,41 @@ public enum Rule {
                 default -> throw new IllegalStateException("Unexpected value, should be in range [-1, 1]: " + value);
             };
         }
+        if (this == BONUS) {
+            Bonus bonus = Bonus.getById(value);
+            return "If a player has " + bonus.keeper.getEmoteAndName() + " visible, they may " + bonus.rule.getActionName("1 extra");
+        }
 
         return "The " + name + " is now " + value;
     }
 
     enum DisplayStyle {
         ALWAYS, WHEN_NOT_DEFAULT, ONLY_NAME_AND_WHEN_NOT_DEFAULT, CUSTOM
+    }
+
+    public String getActionName(String value) {
+        String name = getActionNameSingular(value);
+        boolean plural = false;
+        if (value.length() == 1) plural = value.charAt(0) == '1';
+        if (value.length() == 2) {
+            if (value.charAt(0) == '1') {
+                char second = value.charAt(1);
+                if (second < '1' || second > '9') plural = true;
+            }
+        }
+
+        if (plural) return name + "s";
+        return name;
+    }
+
+    public String getActionNameSingular(String value) {
+        return switch (this) {
+            case PLAY_COUNT -> "play " + value + " card";
+            case DRAW_COUNT -> "draw " + value + " card";
+            case HAND_LIMIT -> "have " + value + " hand card";
+            case KEEPER_LIMIT -> "have " + value + " keeper";
+            default -> ""; // Only used for bonuses
+        };
     }
 
 }
