@@ -45,7 +45,7 @@ public class Player {
         keepers = new ArrayList<>();
 
         int cardCount = FluxGame.CARDS_IN_STARTING_HAND;
-        int handLimit = game.getRule(Rule.HAND_LIMIT);
+        int handLimit = game.getRule(Rule.HAND_LIMIT, null); // Bonus can't apply because new players don't have keepers
         if (handLimit >= 0 && cardCount < handLimit) cardCount = handLimit;
         hand = new ArrayList<>();
 
@@ -169,7 +169,7 @@ public class Player {
     public String getKeepersFormattedForOthers() {
         if (keepers.isEmpty()) return "<@" + userId + "> doesn't have any keepers";
 
-        int hidden = game.getRule(Rule.KEEPERS_SECRET);
+        int hidden = game.getRule(Rule.KEEPERS_SECRET, this);
         if (hidden == -1) {
             return Util.combineCountAndWord(keepers.size(), "hidden keeper");
         }
@@ -250,7 +250,7 @@ public class Player {
      * @param keeperIndex Index of the keeper.
      */
     public boolean isKeeperHidden(int keeperIndex) {
-        int hiddenKeepers = game.getRule(Rule.KEEPERS_SECRET);
+        int hiddenKeepers = game.getRule(Rule.KEEPERS_SECRET, this);
         if (hiddenKeepers == 1) return keeperIndex == hiddenKeeperIndex;
         return hiddenKeepers == -1;
     }

@@ -9,6 +9,7 @@ import com.adex.fluxbot.game.card.Pile;
 import com.adex.fluxbot.game.goal.Goal;
 import com.adex.fluxbot.game.goal.Goals;
 import com.adex.fluxbot.game.keeper.Keeper;
+import com.adex.fluxbot.game.rule.Bonus;
 import com.adex.fluxbot.game.rule.Rule;
 import com.adex.fluxbot.game.rule.Ruleset;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -62,6 +63,10 @@ public class FluxGame {
     private final long channelId;
     private final long guildId;
 
+    // Bonus
+    private Bonus currentBonus;
+    private int bonusReceiverIndex;
+
     public FluxGame(FluxBot bot, long userId, String hostUsername, int gameId, TextChannel channel) {
         this.bot = bot;
         this.gameId = gameId;
@@ -88,24 +93,39 @@ public class FluxGame {
         cardsDrawn = 0;
         cardsPlayed = 0;
         cardPlaying = null;
+
+        currentBonus = null;
+        bonusReceiverIndex = -1;
     }
 
     /**
      * Returns the current value of the rule.
+     * Takes the current bonus into account.
+     * If this is not wanted, player parameter should be null.
      *
-     * @param rule Rule
+     * @param rule   Rule
+     * @param player Player whose bonus to check, nullable
      */
-    public int getRule(Rule rule) {
-        return ruleset.get(rule);
+    public int getRule(Rule rule, @Nullable Player player) {
+        int playerId = getPlayerId(player);
+        int bonus = 0;
+        if (playerId >= 0 && playerId == bonusReceiverIndex) bonus = 1;
+        return ruleset.get(rule) + bonus;
     }
 
     /**
      * Returns the current value of the rule.
+     * Takes the current bonus into account.
+     * If this is not wanted, player parameter should be null.
      *
      * @param ruleId Id of the rule
+     * @param player Player whose bonus to check, nullable
      */
-    public int getRule(int ruleId) {
-        return ruleset.get(ruleId);
+    public int getRule(int ruleId, @Nullable Player player) {
+        int playerId = getPlayerId(player);
+        int bonus = 0;
+        if (playerId >= 0 && playerId == bonusReceiverIndex) bonus = 1;
+        return ruleset.get(ruleId) + bonus;
     }
 
     /**
@@ -117,7 +137,7 @@ public class FluxGame {
         StringBuilder sb = new StringBuilder();
 
         for (Rule rule : Rule.values()) {
-            String ruleString = rule.display(getRule(rule));
+            String ruleString = rule.display(getRule(rule, null));
             if (ruleString.isEmpty()) continue;
             if (!sb.isEmpty()) sb.append('\n');
             sb.append(ruleString);
@@ -264,6 +284,10 @@ public class FluxGame {
      */
     public Player getPlayerByPlayerId(int id) {
         return players.get(id);
+    }
+
+    public int getPlayerId(Player player) {
+        return players.indexOf(player);
     }
 
     public ArrayList<Player> getPlayers() {
@@ -454,7 +478,19 @@ public class FluxGame {
     }
 
     public void checkBonus() {
-        //TODO
+        currentBonus = Bonus.getById(getRule(Rule.BONUS, null));
+        Keeper keeper = currentBonus.keeper;
+        bonusReceiverIndex = -1;
+
+        int index = 0;
+        for (Player player : players) {
+            if (player.hasKeeper(keeper.id)) {
+                bonusReceiverIndex = index;
+                return;
+            }
+
+            index++;
+        }
     }
 
     /**
@@ -471,7 +507,7 @@ public class FluxGame {
      * Should be called when the draw count rule is changed.
      */
     public void drawCountChanged() {
-        int drawCount = getRule(Rule.DRAW_COUNT);
+        int drawCount = getRule(Rule.DRAW_COUNT, currentPlayer());
         if (cardsDrawn >= drawCount) return;
 
         Player player = currentPlayer();
@@ -512,7 +548,7 @@ public class FluxGame {
     public boolean keepersSecretChanged() {
         checkBonus();
 
-        int hiddenKeepers = getRule(Rule.KEEPERS_SECRET);
+        int hiddenKeepers = getRule(Rule.KEEPERS_SECRET, null);
         boolean wait = false;
         for (Player player : players) {
             if (player.hiddenKeepersChanged(hiddenKeepers)) wait = true;
@@ -560,7 +596,7 @@ public class FluxGame {
      */
     public void startTurn(EventContext context) {
         Player player = currentPlayer();
-        int drawCount = getRule(Rule.DRAW_COUNT);
+        int drawCount = getRule(Rule.DRAW_COUNT, player);
         cardsDrawn = player.addCardsToHand(cards, drawCount);
 
         if (player.getHandSize() == 0) {
@@ -589,8 +625,9 @@ public class FluxGame {
      * Starts next turn if no more cards can be played.
      */
     public void prepareCardPlaying(EventContext context) {
-        if (cardsPlayed >= getRule(Rule.PLAY_COUNT)) endTurn(context);
-        else if (getRule(Rule.FINAL_CARD_RANDOM) == 1 && cardsPlayed + 1 == getRule(Rule.PLAY_COUNT))
+        int playCount = getRule(Rule.PLAY_COUNT, currentPlayer());
+        if (cardsPlayed >= playCount) endTurn(context);
+        else if (getRule(Rule.FINAL_CARD_RANDOM, null) == 1 && cardsPlayed + 1 == playCount && cardsPlayed > 0)
             playRandomCardFromHand(context);
     }
 
@@ -638,7 +675,7 @@ public class FluxGame {
      * @return true if cards need to be discarded, false if not.
      */
     public boolean checkHandLimit(Player player) {
-        int handLimit = getRule(Rule.HAND_LIMIT);
+        int handLimit = getRule(Rule.HAND_LIMIT, player);
         if (handLimit < 0 || player.getHandSize() <= handLimit) return false; // No need to discard
         int discardCount = player.getHandSize() - handLimit;
 
@@ -658,13 +695,12 @@ public class FluxGame {
      * @return true if at least one player needs to discard hands, false if not.
      */
     public boolean checkHandLimitFromOthers(@Nullable Player current) {
-        int handLimit = getRule(Rule.HAND_LIMIT);
-        if (handLimit == -1) return false;
+        if (getRule(Rule.HAND_LIMIT, null) == -1) return false; // No hand limit
 
         StringBuilder tooMany = new StringBuilder();
         for (Player player : players) {
             if (player == current) continue;
-            if (player.getHandSize() > handLimit) {
+            if (player.getHandSize() > getRule(Rule.HAND_LIMIT, player)) {
                 turnState = TurnState.WAITING_FOR_CARD_DISCARDING_OTHERS;
                 if (!tooMany.isEmpty()) tooMany.append(", ");
                 tooMany.append(player.getAsMention());
@@ -672,7 +708,7 @@ public class FluxGame {
         }
 
         if (tooMany.isEmpty()) return false;
-        channel.sendMessageEmbeds(MessageCreator.createDefault("Hand limit is " + getRule(Rule.HAND_LIMIT),
+        channel.sendMessageEmbeds(MessageCreator.createDefault("Hand limit is " + getRule(Rule.HAND_LIMIT, null),
                 "Use /discard to discard cards from your hand",
                 tooMany + " have too many cards")).queue();
 
@@ -687,7 +723,7 @@ public class FluxGame {
      * @return true if keepers need to be discarded, false if not.
      */
     public boolean checkKeeperLimit(Player player) {
-        int keeperLimit = getRule(Rule.KEEPER_LIMIT);
+        int keeperLimit = getRule(Rule.KEEPER_LIMIT, player);
         if (keeperLimit < 0 || player.getKeeperCount() <= keeperLimit) return false; // No need to discard
         int discardCount = player.getKeeperCount() - keeperLimit;
 
@@ -708,13 +744,12 @@ public class FluxGame {
      * @return true if at least one player needs to discard keepers, false if not.
      */
     public boolean checkKeeperLimitFromOthers(@Nullable Player current) {
-        int keeperLimit = getRule(Rule.KEEPER_LIMIT);
-        if (keeperLimit == -1) return false;
+        if (getRule(Rule.KEEPER_LIMIT, null) == -1) return false;
 
         StringBuilder tooMany = new StringBuilder();
         for (Player player : players) {
             if (player == current) continue;
-            if (player.getKeeperCount() > keeperLimit) {
+            if (player.getKeeperCount() > getRule(Rule.KEEPER_LIMIT, player)) {
                 turnState = TurnState.WAITING_FOR_KEEPER_DISCARDING_OTHERS;
                 if (!tooMany.isEmpty()) tooMany.append(", ");
                 tooMany.append(player.getAsMention());
@@ -722,7 +757,7 @@ public class FluxGame {
         }
 
         if (tooMany.isEmpty()) return false;
-        channel.sendMessageEmbeds(MessageCreator.createDefault("Keeper limit is " + getRule(Rule.HAND_LIMIT),
+        channel.sendMessageEmbeds(MessageCreator.createDefault("Keeper limit is " + getRule(Rule.HAND_LIMIT, null),
                 "Use /remove to remove keepers from in front of you",
                 tooMany + " have too many keepers")).queue();
 
@@ -749,7 +784,7 @@ public class FluxGame {
         cards.addToDiscardPile(card);
 
         if (turnState == TurnState.WAITING_FOR_CARD_DISCARDING_CURRENT) { // Current player is discarding
-            if (player.getHandSize() <= getRule(Rule.HAND_LIMIT)) {
+            if (player.getHandSize() <= getRule(Rule.HAND_LIMIT, player)) {
                 handLimitIsMet(context);
             }
         } else { // Other than the current player is discarding
@@ -758,7 +793,7 @@ public class FluxGame {
                 // Current player may have extra cards when a new rule is played.
                 if (checking.userId == player.userId) continue;
 
-                if (checking.getHandSize() > getRule(Rule.HAND_LIMIT)) {
+                if (checking.getHandSize() > getRule(Rule.HAND_LIMIT, checking)) {
                     extraCards = true;
                     break;
                 }
@@ -790,7 +825,7 @@ public class FluxGame {
         cards.addToDiscardPile(keeper.getCard());
 
         if (turnState == TurnState.WAITING_FOR_CARD_DISCARDING_CURRENT) { // Current player is discarding
-            if (player.getKeeperCount() <= getRule(Rule.KEEPER_LIMIT)) {
+            if (player.getKeeperCount() <= getRule(Rule.KEEPER_LIMIT, player)) {
                 keeperLimitIsMet(context);
             }
         } else { // Other than the current player is discarding
@@ -799,7 +834,7 @@ public class FluxGame {
                 // Current player may have extra cards when a new rule is played.
                 if (checking.userId == player.userId) continue;
 
-                if (checking.getHandSize() > getRule(Rule.HAND_LIMIT)) {
+                if (checking.getHandSize() > getRule(Rule.HAND_LIMIT, checking)) {
                     extraCards = true;
                     break;
                 }

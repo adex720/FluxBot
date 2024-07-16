@@ -59,7 +59,7 @@ public class CommandDiscard extends Command {
 
             // can other players discard
         } else if (game.getTurnState() == FluxGame.TurnState.WAITING_FOR_CARD_DISCARDING_OTHERS && game.currentPlayerUserId() != userId) {
-            if (player.getHandSize() <= game.getRule(Rule.HAND_LIMIT)) {
+            if (player.getHandSize() <= game.getRule(Rule.HAND_LIMIT, player)) {
                 event.replyEmbeds(MessageCreator.createDefault("Discard", "Cannot discard card",
                                 "You can only discard cards when you have more than the hand limit"))
                         .setEphemeral(true).queue();

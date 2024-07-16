@@ -59,7 +59,7 @@ public class CommandRemove extends Command {
 
             // can other players remove keepers
         } else if (game.getTurnState() == FluxGame.TurnState.WAITING_FOR_KEEPER_DISCARDING_OTHERS && game.currentPlayerUserId() != userId) {
-            if (player.getHandSize() <= game.getRule(Rule.HAND_LIMIT)) {
+            if (player.getHandSize() <= game.getRule(Rule.HAND_LIMIT, player)) {
                 event.replyEmbeds(MessageCreator.createDefault("Remove", "Cannot remove keeper",
                                 "You can only remove keepers when you have more than the keeper limit"))
                         .setEphemeral(true).queue();

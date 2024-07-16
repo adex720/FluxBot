@@ -29,13 +29,12 @@ public class CommandHide extends Command {
             return;
         }
 
-        if (game.getRule(Rule.KEEPERS_SECRET) != 1) {
+        long userId = context.getUserId();
+        Player player = game.getPlayerByUserId(userId);
+        if (game.getRule(Rule.KEEPERS_SECRET, player) != 1) {
             reply(context, MessageCreator.createDefault("Hide", "Cannot hide keeper", "All keepers are currently visible or hidden"), true);
             return;
         }
-
-        long userId = context.getUserId();
-        Player player = game.getPlayerByUserId(userId);
 
         if (player.getKeeperCount() == 0) {
             reply(context, MessageCreator.createDefault("Hide", "Cannot hide keeper", "You don't have any keepers"), true);
