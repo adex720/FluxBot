@@ -101,7 +101,7 @@ public enum Rule {
             return switch (value) {
                 case -1 -> "All keepers are now hidden";
                 case 0 -> "All keepers are revealed";
-                case 1 -> "Each player may now have one keeper hidden";
+                case 1 -> "Each player may now have one keeper hidden. Choose your hidden keeper with /hide";
                 default -> throw new IllegalStateException("Unexpected value, should be in range [-1, 1]: " + value);
             };
         }
