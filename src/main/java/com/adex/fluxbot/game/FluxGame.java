@@ -166,6 +166,8 @@ public class FluxGame {
             if (keepersSecretChanged()) waitForUser = true;
         } else if (rule == Rule.BONUS) {
             checkBonus();
+        } else if (rule == Rule.DRAW_COUNT) {
+            drawCountChanged();
         }
 
         return waitForUser;
@@ -191,6 +193,8 @@ public class FluxGame {
             if (keepersSecretChanged()) waitForUser = true;
         } else if (ruleId == Rule.BONUS.id) {
             checkBonus();
+        } else if (ruleId == Rule.DRAW_COUNT.id) {
+            drawCountChanged();
         }
 
         return waitForUser;
@@ -481,6 +485,7 @@ public class FluxGame {
         currentBonus = Bonus.getById(getRule(Rule.BONUS, null));
         Keeper keeper = currentBonus.keeper;
         bonusReceiverIndex = -1;
+        if (keeper == null) return;
 
         int index = 0;
         for (Player player : players) {
