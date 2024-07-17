@@ -895,10 +895,18 @@ public class FluxGame {
 
     public void handleWin(int winnerId) {
         delete();
+        Player winner = getPlayerByPlayerId(winnerId);
+        channel.sendMessageEmbeds(MessageCreator.createDefault(winner.username + " has won the game!",
+                "The goal was to have " + goal.getDescription(),
+                "Create a new game with /create\nJoin a new game with /join")).queue();
     }
 
     public void handleForfeit(int winnerId) {
         delete();
+        Player winner = getPlayerByPlayerId(winnerId);
+        channel.sendMessageEmbeds(MessageCreator.createDefault(winner.username + " has won the game!",
+                "All other players have left the game",
+                "Create a new game with /create\nJoin a new game with /join")).queue();
     }
 
     /**
