@@ -39,7 +39,7 @@ public class CommandTable extends Command {
 
         // Adding player hands and keepers starting from index 2
         int playerId = game.currentPlayerId(); // Starting from player whose turn it is
-        for (int i = 2; i < playerCount; i++) {
+        for (int i = 2; i < playerCount + 2; i++) {
             fields[i] = game.getPlayerByPlayerId(playerId).getInfoField();
             playerId++;
             if (playerId >= playerCount) playerId = 0;
