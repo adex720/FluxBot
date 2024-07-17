@@ -15,6 +15,7 @@ public class KeeperCard extends Card {
     public KeeperCard(Keeper keeper) {
         super(keeper.name, Type.KEEPER);
         this.keeper = keeper;
+        this.keeper.setCard(this);
     }
 
     @Override
