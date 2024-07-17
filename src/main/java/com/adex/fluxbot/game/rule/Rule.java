@@ -105,6 +105,33 @@ public enum Rule {
     }
 
     /**
+     * Returns a string containing the name of the rule, and it's value.
+     * Returns a sentence with a verb.
+     *
+     * @param value Value of the rule
+     */
+    public String getLongName(int value) {
+        if (this == FINAL_CARD_RANDOM) return "The final card played each turn is randomly picked";
+        if (this == KEEPERS_SECRET) {
+            return switch (value) {
+                case -1 -> "All keepers are hidden";
+                case 0 -> "Keepers are visible again";
+                case 1 -> "Each player may have one hidden keeper";
+                default -> throw new IllegalStateException("Unexpected hidden keeper value, should be in range [-1, 1]: " + value);
+            };
+        }
+        if (this == BONUS) {
+            return "The current bonus is " + Bonus.getById(value).name;
+        }
+
+        if (this == PLAY_COUNT || this == DRAW_COUNT) {
+            return "The " + name + " count is now" + value;
+        }
+
+        return "The " + name + " is now " + value;
+    }
+
+    /**
      * Returns a string containing a sentence explaining what has happened when the rule has changed.
      *
      * @param value The new value of the rule.
@@ -125,7 +152,7 @@ public enum Rule {
             return "If a player has " + bonus.keeper.getEmoteAndName() + " visible, they may " + bonus.rule.getActionName("1 extra");
         }
 
-        return "The " + name + " is now " + value;
+        return getLongName(value);
     }
 
     enum DisplayStyle {
