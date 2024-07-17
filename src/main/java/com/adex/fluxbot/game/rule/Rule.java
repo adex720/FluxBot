@@ -125,7 +125,7 @@ public enum Rule {
         }
 
         if (this == PLAY_COUNT || this == DRAW_COUNT) {
-            return "The " + name + " count is now" + value;
+            return "The " + name + " count is now " + value;
         }
 
         return "The " + name + " is now " + value;
